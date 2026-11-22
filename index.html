@@ -10,21 +10,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="assets/logo.png?v=20261124" />
-  <link rel="stylesheet" href="styles.css?v=20261124" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261125" />
+  <link rel="stylesheet" href="styles.css?v=20261125" />
 </head>
 <body class="theme-sovereign">
-  <!-- Subtle Smoked Glass Ambient Backdrop -->
+  <!-- Clean Luxury Obsidian Ambient Backdrop -->
   <div class="bg-aurora" aria-hidden="true">
     <div class="aurora-orb orb-gold"></div>
     <div class="aurora-orb orb-purple"></div>
     <div class="aurora-orb orb-blue"></div>
     <div class="aurora-orb orb-red"></div>
-    <div class="bg-grid"></div>
+    <div class="bg-vignette"></div>
   </div>
 
-  <!-- 3D Glass Header -->
-  <header class="site-header">
+  <!-- Transparent Blending Header (Separator fades in on scroll) -->
+  <header id="siteHeader" class="site-header">
     <div class="header-inner">
       <a href="#create" id="brandHomeLink" class="brand-lockup" aria-label="QuickPoll Home">
         <!-- ICON SLOT: Brand Logo (transparent PNG) -->
@@ -56,24 +56,15 @@
         <span class="icon-slot icon-slot-optional" data-icon-slot="custom-header" title="Custom icon slot">
           <!-- Add your own <img> or <svg> icon here -->
         </span>
-
-        <span id="syncModeBadge" class="status-pill stroke-subtle" title="Storage and sync mode">
-          <span class="pulse-dot"></span>
-          <span id="syncModeText">Ready</span>
-        </span>
       </nav>
 
-      <!-- Mobile & Tablet Controls -->
+      <!-- Mobile & Tablet Hamburger -->
       <div class="mobile-header-controls">
-        <span id="mobileSyncBadge" class="status-pill stroke-subtle" title="Storage and sync mode">
-          <span class="pulse-dot"></span>
-          <span id="mobileSyncText">Ready</span>
-        </span>
         <button
           type="button"
           id="hamburgerBtn"
           class="hamburger-btn"
-          aria-label="Open navigation menu"
+          aria-label="Open menu"
           aria-expanded="false"
           aria-controls="mobileNavDrawer"
         >
@@ -89,7 +80,7 @@
   <div id="mobileNavBackdrop" class="drawer-backdrop hidden" aria-hidden="true"></div>
   <aside id="mobileNavDrawer" class="mobile-drawer" aria-label="Mobile navigation" aria-hidden="true">
     <div class="drawer-head">
-      <span class="drawer-title stroke-heading">Pages</span>
+      <span class="drawer-title stroke-heading">Menu</span>
       <button type="button" id="closeDrawerBtn" class="btn btn-dark btn-sm stroke-btn" aria-label="Close menu">
         Close
       </button>
@@ -131,7 +122,7 @@
               <img src="assets/icon-poll.png" alt="Poll Icon" class="slot-img" />
             </div>
             <div class="header-title-block">
-              <h1 id="createHeading" class="card-title stroke-heading">Create a Poll</h1>
+              <h1 id="createHeading" class="card-title stroke-heading">Create Poll</h1>
             </div>
             <span id="overallReadinessBadge" class="readiness-chip stroke-subtle">Draft</span>
           </div>
@@ -140,15 +131,15 @@
           <div class="live-status-strip" aria-live="polite">
             <div id="statusChipQuestion" class="mini-status-chip">
               <span class="mini-dot"></span>
-              <span class="stroke-subtle">Question: <strong id="statusTextQuestion">Empty</strong></span>
+              <span class="stroke-subtle">Question <strong id="statusTextQuestion">Empty</strong></span>
             </div>
             <div id="statusChipAnswers" class="mini-status-chip">
               <span class="mini-dot"></span>
-              <span class="stroke-subtle">Answers: <strong id="statusTextAnswers">0 / 2</strong></span>
+              <span class="stroke-subtle">Answers <strong id="statusTextAnswers">0 of 2</strong></span>
             </div>
             <div id="statusChipExpiry" class="mini-status-chip is-ready">
               <span class="mini-dot"></span>
-              <span class="stroke-subtle">Expiry: <strong id="statusTextExpiry">24h</strong></span>
+              <span class="stroke-subtle">Expiry <strong id="statusTextExpiry">24h</strong></span>
             </div>
           </div>
 
@@ -176,7 +167,7 @@
           <div class="field-group">
             <div class="label-row">
               <label class="field-label stroke-label">Answers</label>
-              <span id="optionCountStatus" class="live-counter stroke-subtle">2 / 8</span>
+              <span id="optionCountStatus" class="live-counter stroke-subtle">2 of 8</span>
             </div>
 
             <div id="optionsList" class="options-builder-list"></div>
@@ -304,7 +295,7 @@
             <div id="previewOptionsList" class="preview-options-list"></div>
 
             <div class="preview-footer-note">
-              <span class="stroke-subtle">Tap an option to test live bars</span>
+              <span class="stroke-subtle">Tap an option to test</span>
               <button type="button" id="resetPreviewVotesBtn" class="text-link-btn stroke-subtle">Reset</button>
             </div>
           </div>
@@ -316,7 +307,7 @@
                 <img src="assets/icon-share.png" alt="Share Icon" class="slot-img" />
               </div>
               <div>
-                <h3 class="card-title stroke-heading">Poll Link Ready</h3>
+                <h3 class="card-title stroke-heading">Link Ready</h3>
               </div>
             </div>
 
@@ -347,8 +338,7 @@
             <img src="assets/logo.png" alt="QuickPoll" class="slot-img" />
           </div>
           <div>
-            <h1 id="howToHeading" class="page-title stroke-display">How to Use QuickPoll</h1>
-            <p class="card-desc stroke-body">Four steps from question to live results.</p>
+            <h1 id="howToHeading" class="page-title stroke-display">How to Use</h1>
           </div>
         </div>
 
@@ -360,9 +350,9 @@
                 <img src="assets/icon-poll.png" alt="Question" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Enter Question &amp; Answers</h2>
+            <h2 class="card-title stroke-heading">Write Question &amp; Answers</h2>
             <p class="card-desc stroke-body">
-              Write your question and 2 to 8 answers. Choose single or multiple picks and watch the live preview update.
+              Enter your question and 2 to 8 choices. Enable multiple picks if voters can choose more than one.
             </p>
           </article>
 
@@ -373,9 +363,9 @@
                 <img src="assets/icon-timer.png" alt="Timer" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Pick an Expiry Time</h2>
+            <h2 class="card-title stroke-heading">Set Expiration</h2>
             <p class="card-desc stroke-body">
-              Select a preset duration or set an exact date and time. Voting closes automatically when the timer ends.
+              Choose a quick preset or custom date and time. Voting closes automatically when the clock finishes.
             </p>
           </article>
 
@@ -386,9 +376,9 @@
                 <img src="assets/icon-share.png" alt="Share" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Send the Unique Link</h2>
+            <h2 class="card-title stroke-heading">Send the Link</h2>
             <p class="card-desc stroke-body">
-              Click Generate Poll Link and send the URL to friends. Every poll opens on its own clean voting page.
+              Generate your unique poll URL and send it to friends. Opening the link loads that poll page.
             </p>
           </article>
 
@@ -399,16 +389,16 @@
                 <img src="assets/icon-vote.png" alt="Results" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Track Live Results</h2>
+            <h2 class="card-title stroke-heading">Track Results</h2>
             <p class="card-desc stroke-body">
-              Reopen any poll anytime from My Polls to check live tallies, remaining time, or copy the link again.
+              Open My Polls anytime to revisit active or expired polls and copy their links again.
             </p>
           </article>
         </div>
 
         <div class="page-cta-row">
           <button type="button" class="btn btn-gold btn-lg stroke-btn jump-create-btn">
-            Create a Poll
+            Create Poll
           </button>
         </div>
       </div>
@@ -423,7 +413,6 @@
           </div>
           <div>
             <h1 id="qaHeading" class="page-title stroke-display">Questions &amp; Answers</h1>
-            <p class="card-desc stroke-body">Common questions about creating and sharing polls.</p>
           </div>
         </div>
 
@@ -431,24 +420,24 @@
           <div class="faq-list">
             <div class="faq-item open">
               <button type="button" class="faq-trigger stroke-label" aria-expanded="true">
-                <span>Do I need an account to make or vote on a poll?</span>
+                <span>Do I need an account to create or vote?</span>
                 <span class="faq-plus">+</span>
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  No. You can create a poll, generate its link, and share it with friends immediately without signing up.
+                  No. You can create a poll, copy the link, and vote immediately without signing up.
                 </p>
               </div>
             </div>
 
             <div class="faq-item">
               <button type="button" class="faq-trigger stroke-label" aria-expanded="false">
-                <span>How do friends see and vote on my poll?</span>
+                <span>How do friends open and vote on my poll?</span>
                 <span class="faq-plus">+</span>
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  When you click Generate Poll Link, QuickPoll creates a unique URL for that poll. Anyone who opens that link sees your question, answers, and live countdown timer. When hosted with PHP active on Hostinger, votes from all friends sync together automatically.
+                  Every poll generates a unique shareable URL. Anyone opening that link sees your question, answers, and live countdown timer.
                 </p>
               </div>
             </div>
@@ -460,43 +449,43 @@
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  Once the countdown reaches zero, the poll switches to EXPIRED, voting locks automatically, and visitors only see the final results.
+                  Once the timer reaches zero, voting locks automatically and the page shows final results.
                 </p>
               </div>
             </div>
 
             <div class="faq-item">
               <button type="button" class="faq-trigger stroke-label" aria-expanded="false">
-                <span>Can voters choose more than one answer?</span>
+                <span>Can voters select multiple answers?</span>
                 <span class="faq-plus">+</span>
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  Yes. Enable Multiple picks on the Create Poll page before generating your link to let friends select several answers.
+                  Yes. Turn on Multiple picks before generating your poll link.
                 </p>
               </div>
             </div>
 
             <div class="faq-item">
               <button type="button" class="faq-trigger stroke-label" aria-expanded="false">
-                <span>Can I vote more than once on the same poll?</span>
+                <span>Can someone vote twice from the same browser?</span>
                 <span class="faq-plus">+</span>
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  Each browser stores a record of your submitted pick for that poll ID and locks the vote button afterward so accidental double-voting is prevented.
+                  Each browser remembers submitted votes per poll and locks voting afterward to prevent repeat picks.
                 </p>
               </div>
             </div>
 
             <div class="faq-item">
               <button type="button" class="faq-trigger stroke-label" aria-expanded="false">
-                <span>Where can I find polls I already made?</span>
+                <span>Where are my created polls stored?</span>
                 <span class="faq-plus">+</span>
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  Open My Polls from the menu to reopen any poll you generated on this device, copy its link, or remove it.
+                  Your poll history is saved in My Polls so you can reopen, copy, or delete polls anytime.
                 </p>
               </div>
             </div>
@@ -505,7 +494,7 @@
 
         <div class="page-cta-row">
           <button type="button" class="btn btn-gold btn-lg stroke-btn jump-create-btn">
-            Create a Poll
+            Create Poll
           </button>
         </div>
       </div>
@@ -520,39 +509,38 @@
           </div>
           <div>
             <h1 id="privacyHeading" class="page-title stroke-display">Privacy Policy</h1>
-            <p class="card-desc stroke-body">How poll data, browser storage, and ads work on QuickPoll.</p>
           </div>
         </div>
 
         <div class="glass-card policy-card">
           <div class="policy-section">
-            <h2 class="card-title stroke-heading">1. Poll Data &amp; Local Storage</h2>
+            <h2 class="card-title stroke-heading">1. Poll Data &amp; Browser Storage</h2>
             <p class="stroke-body">
-              QuickPoll does not require accounts, names, or email addresses. Polls you create are either encoded directly inside the shareable URL or saved on the host server solely to display the poll and count anonymous votes. Your browser's localStorage stores your created poll history and prevents duplicate votes from the same browser.
+              QuickPoll does not require accounts, names, or email addresses. Polls you create are either carried inside the shareable URL or saved on the host server solely to display the poll and count anonymous votes. Your browser stores your created poll list and vote lock locally.
             </p>
           </div>
 
           <div class="policy-section">
             <h2 class="card-title stroke-heading">2. Shared Links</h2>
             <p class="stroke-body">
-              Anyone with a poll's unique link can view that poll's question, answer options, expiration time, and total vote counts. Avoid including private or sensitive personal details inside poll questions or answers.
+              Anyone with a poll link can view its question, options, expiration time, and vote totals. Avoid placing private personal information inside polls.
             </p>
           </div>
 
           <div class="policy-section">
             <h2 class="card-title stroke-heading">3. Cookies &amp; Google AdSense</h2>
             <p class="stroke-body">
-              This website uses Google AdSense to display advertisements. Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to visitors based on their visit to this site and/or other sites on the Internet.
+              This site uses Google AdSense to display advertisements. Third party vendors, including Google, use cookies to serve ads based on prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads based on visits to this site and other sites on the Internet.
             </p>
             <p class="stroke-body">
-              Visitors may opt out of personalized advertising by visiting Google Ads Settings (adssettings.google.com) or by visiting aboutads.info.
+              Visitors may opt out of personalized advertising through Google Ads Settings at adssettings.google.com or at aboutads.info.
             </p>
           </div>
 
           <div class="policy-section">
-            <h2 class="card-title stroke-heading">4. Managing Your Data</h2>
+            <h2 class="card-title stroke-heading">4. Managing Data</h2>
             <p class="stroke-body">
-              You can delete your saved polls anytime from My Polls or by clearing your browser site data.
+              You can remove saved polls anytime from My Polls or clear your browser site data.
             </p>
           </div>
         </div>
@@ -650,6 +638,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=20261124"></script>
+  <script src="app.js?v=20261125"></script>
 </body>
 </html>

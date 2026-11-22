@@ -35,10 +35,8 @@
 
   const el = {
     body: document.body,
+    siteHeader: document.getElementById('siteHeader'),
     brandHomeLink: document.getElementById('brandHomeLink'),
-    syncModeBadge: document.getElementById('syncModeBadge'),
-    syncModeText: document.getElementById('syncModeText'),
-    mobileSyncText: document.getElementById('mobileSyncText'),
 
     navCreateBtn: document.getElementById('navCreateBtn'),
     navHowToBtn: document.getElementById('navHowToBtn'),
@@ -357,14 +355,8 @@
      ======================================================================== */
 
   async function detectBackend() {
-    const setModeLabel = (label) => {
-      el.syncModeText.textContent = label;
-      el.mobileSyncText.textContent = label;
-    };
-
     if (window.location.protocol === 'file:' || window.QUICKPOLL_ASSET_DATA) {
       state.serverMode = false;
-      setModeLabel('Link Mode');
       return;
     }
     try {
@@ -374,7 +366,6 @@
         const data = await res.json();
         if (data && data.ok) {
           state.serverMode = true;
-          setModeLabel('Live Sync');
           return;
         }
       }
@@ -382,7 +373,6 @@
       // Fallback silently
     }
     state.serverMode = false;
-    setModeLabel('Link Mode');
   }
 
   /* ========================================================================
@@ -496,7 +486,7 @@
       ? 'Duplicate'
       : answersReady
       ? `${filledOpts.length} Ready`
-      : `${filledOpts.length} / 2`;
+      : `${filledOpts.length} of 2`;
 
     el.answersFeedback.textContent = hasDuplicates ? 'Duplicate answer detected.' : '';
 
@@ -532,7 +522,7 @@
   function renderBuilderOptionRows() {
     el.optionsList.innerHTML = '';
     const count = state.builder.options.length;
-    el.optionCountStatus.textContent = `${count} / 8`;
+    el.optionCountStatus.textContent = `${count} of 8`;
     el.addOptionBtn.disabled = count >= 8;
 
     state.builder.options.forEach((val, idx) => {
@@ -1332,6 +1322,13 @@
       const loaded = await loadRouteFromUrl();
       if (!loaded) navigateToPage('create', false);
     });
+
+    const syncHeaderScroll = () => {
+      if (!el.siteHeader) return;
+      el.siteHeader.classList.toggle('is-scrolled', window.scrollY > 8);
+    };
+    window.addEventListener('scroll', syncHeaderScroll, { passive: true });
+    syncHeaderScroll();
   }
 
   async function init() {
