@@ -1,7 +1,7 @@
 /* ==========================================================================
    QuickPoll Single-Page Application
    Pages: Create Poll | How to Use | Q&A | Privacy | My Polls | Unique Poll
-   Supports Hostinger PHP Live Sync (poll-api.php) and Static URL Mode
+   Includes Mobile/Tablet Hamburger Drawer & Full Live Status UI
    ========================================================================== */
 (() => {
   'use strict';
@@ -38,12 +38,22 @@
     brandHomeLink: document.getElementById('brandHomeLink'),
     syncModeBadge: document.getElementById('syncModeBadge'),
     syncModeText: document.getElementById('syncModeText'),
+    mobileSyncText: document.getElementById('mobileSyncText'),
+
     navCreateBtn: document.getElementById('navCreateBtn'),
     navHowToBtn: document.getElementById('navHowToBtn'),
     navQaBtn: document.getElementById('navQaBtn'),
     navPrivacyBtn: document.getElementById('navPrivacyBtn'),
     navSavedBtn: document.getElementById('navSavedBtn'),
     savedCountBadge: document.getElementById('savedCountBadge'),
+    mobileSavedCountBadge: document.getElementById('mobileSavedCountBadge'),
+
+    hamburgerBtn: document.getElementById('hamburgerBtn'),
+    mobileNavBackdrop: document.getElementById('mobileNavBackdrop'),
+    mobileNavDrawer: document.getElementById('mobileNavDrawer'),
+    closeDrawerBtn: document.getElementById('closeDrawerBtn'),
+    drawerNavBtns: Array.from(document.querySelectorAll('.drawer-nav-btn')),
+
     toastBanner: document.getElementById('toastBanner'),
 
     createView: document.getElementById('createView'),
@@ -54,6 +64,14 @@
     savedView: document.getElementById('savedView'),
 
     pollForm: document.getElementById('pollForm'),
+    overallReadinessBadge: document.getElementById('overallReadinessBadge'),
+    statusChipQuestion: document.getElementById('statusChipQuestion'),
+    statusTextQuestion: document.getElementById('statusTextQuestion'),
+    statusChipAnswers: document.getElementById('statusChipAnswers'),
+    statusTextAnswers: document.getElementById('statusTextAnswers'),
+    statusChipExpiry: document.getElementById('statusChipExpiry'),
+    statusTextExpiry: document.getElementById('statusTextExpiry'),
+
     questionInput: document.getElementById('questionInput'),
     questionCharCount: document.getElementById('questionCharCount'),
     questionMeterFill: document.getElementById('questionMeterFill'),
@@ -301,7 +319,37 @@
   }
 
   function updateSavedCountBadge() {
-    el.savedCountBadge.textContent = String(getSavedPolls().length);
+    const countStr = String(getSavedPolls().length);
+    el.savedCountBadge.textContent = countStr;
+    el.mobileSavedCountBadge.textContent = countStr;
+  }
+
+  /* ========================================================================
+     Hamburger Drawer Controls
+     ======================================================================== */
+
+  function openDrawer() {
+    el.hamburgerBtn.classList.add('is-open');
+    el.hamburgerBtn.setAttribute('aria-expanded', 'true');
+    el.mobileNavDrawer.classList.add('open');
+    el.mobileNavDrawer.setAttribute('aria-hidden', 'false');
+    el.mobileNavBackdrop.classList.remove('hidden');
+  }
+
+  function closeDrawer() {
+    el.hamburgerBtn.classList.remove('is-open');
+    el.hamburgerBtn.setAttribute('aria-expanded', 'false');
+    el.mobileNavDrawer.classList.remove('open');
+    el.mobileNavDrawer.setAttribute('aria-hidden', 'true');
+    el.mobileNavBackdrop.classList.add('hidden');
+  }
+
+  function toggleDrawer() {
+    if (el.mobileNavDrawer.classList.contains('open')) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
   }
 
   /* ========================================================================
@@ -309,9 +357,14 @@
      ======================================================================== */
 
   async function detectBackend() {
+    const setModeLabel = (label) => {
+      el.syncModeText.textContent = label;
+      el.mobileSyncText.textContent = label;
+    };
+
     if (window.location.protocol === 'file:' || window.QUICKPOLL_ASSET_DATA) {
       state.serverMode = false;
-      el.syncModeText.textContent = 'Link Mode';
+      setModeLabel('Link Mode');
       return;
     }
     try {
@@ -321,7 +374,7 @@
         const data = await res.json();
         if (data && data.ok) {
           state.serverMode = true;
-          el.syncModeText.textContent = 'Live Sync';
+          setModeLabel('Live Sync');
           return;
         }
       }
@@ -329,7 +382,7 @@
       // Fallback silently
     }
     state.serverMode = false;
-    el.syncModeText.textContent = 'Link Mode';
+    setModeLabel('Link Mode');
   }
 
   /* ========================================================================
@@ -340,6 +393,7 @@
     clearInterval(state.countdownTimerId);
     clearInterval(state.pollRefreshTimerId);
     state.currentPage = pageName;
+    closeDrawer();
 
     el.createView.classList.toggle('active', pageName === 'create');
     el.howToView.classList.toggle('active', pageName === 'how-to-use');
@@ -353,6 +407,10 @@
     el.navQaBtn.classList.toggle('active', pageName === 'qa');
     el.navPrivacyBtn.classList.toggle('active', pageName === 'privacy');
     el.navSavedBtn.classList.toggle('active', pageName === 'saved');
+
+    el.drawerNavBtns.forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.page === pageName);
+    });
 
     if (pageName === 'create') {
       applyTheme(state.builder.theme);
@@ -413,23 +471,53 @@
   }
 
   /* ========================================================================
-     Live Feedback & Builder
+     Full Live Status & Readiness UI
      ======================================================================== */
 
-  function updateLiveMeters() {
+  function updateLiveStatusUI() {
     const q = state.builder.question.trim();
     const len = q.length;
     el.questionCharCount.textContent = `${len} / 180`;
     el.questionCharCount.classList.toggle('warn', len >= 160);
     el.questionMeterFill.style.width = `${Math.min(100, Math.round((len / 90) * 100))}%`;
 
+    const qReady = len > 0;
+    el.statusChipQuestion.classList.toggle('is-ready', qReady);
+    el.statusTextQuestion.textContent = qReady ? 'Ready' : 'Empty';
+
     const filledOpts = state.builder.options.map((o) => o.trim()).filter(Boolean);
     const uniqueOpts = new Set(filledOpts.map((o) => o.toLowerCase()));
-    if (uniqueOpts.size < filledOpts.length) {
-      el.answersFeedback.textContent = 'Duplicate answer detected.';
-    } else {
-      el.answersFeedback.textContent = '';
-    }
+    const hasDuplicates = uniqueOpts.size < filledOpts.length;
+    const answersReady = filledOpts.length >= 2 && !hasDuplicates;
+
+    el.statusChipAnswers.classList.toggle('is-ready', answersReady);
+    el.statusChipAnswers.classList.toggle('is-warn', hasDuplicates);
+    el.statusTextAnswers.textContent = hasDuplicates
+      ? 'Duplicate'
+      : answersReady
+      ? `${filledOpts.length} Ready`
+      : `${filledOpts.length} / 2`;
+
+    el.answersFeedback.textContent = hasDuplicates ? 'Duplicate answer detected.' : '';
+
+    const expTs = getBuilderExpiryTimestamp();
+    const expReady = expTs > Date.now() + 10000;
+    el.statusChipExpiry.classList.toggle('is-ready', expReady);
+    el.statusChipExpiry.classList.toggle('is-warn', !expReady);
+    el.statusTextExpiry.textContent = !expReady
+      ? 'Invalid'
+      : state.builder.expiryMinutes === 'custom'
+      ? 'Custom'
+      : formatPresetLabel(state.builder.expiryMinutes);
+
+    const allReady = qReady && answersReady && expReady;
+    el.overallReadinessBadge.classList.toggle('is-ready', allReady);
+    el.overallReadinessBadge.textContent = allReady ? 'Ready' : 'Draft';
+  }
+
+  function formatPresetLabel(mins) {
+    const map = { '15': '15m', '60': '1h', '360': '6h', '1440': '24h', '4320': '3d', '10080': '7d' };
+    return map[String(mins)] || '24h';
   }
 
   function getBuilderExpiryTimestamp() {
@@ -467,7 +555,7 @@
       input.addEventListener('input', (e) => {
         state.builder.options[idx] = e.target.value;
         input.classList.remove('is-invalid');
-        updateLiveMeters();
+        updateLiveStatusUI();
         syncLivePreview();
       });
 
@@ -488,7 +576,7 @@
         state.builder.options[idx - 1] = state.builder.options[idx];
         state.builder.options[idx] = temp;
         renderBuilderOptionRows();
-        updateLiveMeters();
+        updateLiveStatusUI();
         syncLivePreview();
       });
 
@@ -504,7 +592,7 @@
         state.previewVotes.splice(idx, 1);
         state.previewPicks = [];
         renderBuilderOptionRows();
-        updateLiveMeters();
+        updateLiveStatusUI();
         syncLivePreview();
       });
 
@@ -527,6 +615,7 @@
       el.expiryLiveSummary.textContent = `Closes ${formatLocalDateTime(expTs)}`;
       el.previewCountdown.textContent = formatDurationShort(diff);
     }
+    updateLiveStatusUI();
   }
 
   function syncLivePreview() {
@@ -973,13 +1062,13 @@
 
       const openBtn = document.createElement('button');
       openBtn.type = 'button';
-      openBtn.className = 'btn btn-primary-gradient stroke-btn';
+      openBtn.className = 'btn btn-gold stroke-btn';
       openBtn.textContent = 'Open';
       openBtn.addEventListener('click', () => openPollObject(poll, true));
 
       const copyBtn = document.createElement('button');
       copyBtn.type = 'button';
-      copyBtn.className = 'btn btn-gold stroke-btn';
+      copyBtn.className = 'btn btn-glass-blue stroke-btn';
       copyBtn.textContent = 'Copy';
       copyBtn.addEventListener('click', () => copyTextToClipboard(poll.shareUrl || buildShareUrl(poll)));
 
@@ -1081,14 +1170,26 @@
     el.savedBackBtn.addEventListener('click', () => navigateToPage('create'));
     el.backToBuilderBtn.addEventListener('click', () => navigateToPage('create'));
 
+    el.hamburgerBtn.addEventListener('click', toggleDrawer);
+    el.closeDrawerBtn.addEventListener('click', closeDrawer);
+    el.mobileNavBackdrop.addEventListener('click', closeDrawer);
+    el.drawerNavBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        navigateToPage(btn.dataset.page || 'create');
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDrawer();
+    });
+
     el.jumpCreateBtns.forEach((btn) => {
       btn.addEventListener('click', () => navigateToPage('create'));
     });
 
     el.footerNavLinks.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const page = btn.dataset.page || 'create';
-        navigateToPage(page);
+        navigateToPage(btn.dataset.page || 'create');
       });
     });
 
@@ -1105,7 +1206,7 @@
       state.builder.question = e.target.value;
       el.questionInput.classList.remove('is-invalid');
       el.questionFeedback.textContent = '';
-      updateLiveMeters();
+      updateLiveStatusUI();
       syncLivePreview();
     });
 
@@ -1114,7 +1215,7 @@
       state.builder.options.push('');
       state.previewVotes.push(1);
       renderBuilderOptionRows();
-      updateLiveMeters();
+      updateLiveStatusUI();
       syncLivePreview();
       const inputs = el.optionsList.querySelectorAll('.option-input');
       if (inputs.length) inputs[inputs.length - 1].focus();
@@ -1237,7 +1338,7 @@
     el.customExpiryInput.min = toDatetimeLocalValue(Date.now() + 60 * 1000);
     updateSavedCountBadge();
     renderBuilderOptionRows();
-    updateLiveMeters();
+    updateLiveStatusUI();
     syncLivePreview();
     bindEvents();
 
