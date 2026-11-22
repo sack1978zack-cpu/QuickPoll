@@ -1,6 +1,7 @@
 /* ==========================================================================
    QuickPoll Single-Page Application
-   Supports both Hostinger PHP Live Sync (poll-api.php) and 100% Static URL Mode
+   Pages: Question | Answers | How to Use | My Polls | Unique Poll Page
+   Supports Hostinger PHP Live Sync (poll-api.php) and Static URL Mode
    ========================================================================== */
 (() => {
   'use strict';
@@ -11,6 +12,7 @@
 
   const state = {
     serverMode: false,
+    currentPage: 'question',
     builder: {
       question: '',
       options: ['', ''],
@@ -31,18 +33,32 @@
     pollRefreshTimerId: null,
   };
 
-  // DOM References
   const el = {
     body: document.body,
     brandHomeLink: document.getElementById('brandHomeLink'),
     syncModeBadge: document.getElementById('syncModeBadge'),
     syncModeText: document.getElementById('syncModeText'),
-    navCreateBtn: document.getElementById('navCreateBtn'),
+    navQuestionBtn: document.getElementById('navQuestionBtn'),
+    navAnswersBtn: document.getElementById('navAnswersBtn'),
+    navHowToBtn: document.getElementById('navHowToBtn'),
     navSavedBtn: document.getElementById('navSavedBtn'),
     savedCountBadge: document.getElementById('savedCountBadge'),
     toastBanner: document.getElementById('toastBanner'),
 
-    builderView: document.getElementById('builderView'),
+    builderProgressBar: document.getElementById('builderProgressBar'),
+    builderWorkspace: document.getElementById('builderWorkspace'),
+    stepBtnQuestion: document.getElementById('stepBtnQuestion'),
+    stepBtnAnswers: document.getElementById('stepBtnAnswers'),
+    stepPillShare: document.getElementById('stepPillShare'),
+    stepQuestionStatus: document.getElementById('stepQuestionStatus'),
+    stepAnswersStatus: document.getElementById('stepAnswersStatus'),
+    stepShareStatus: document.getElementById('stepShareStatus'),
+    stepConnectorFill: document.getElementById('stepConnectorFill'),
+    stepConnectorFill2: document.getElementById('stepConnectorFill2'),
+
+    questionView: document.getElementById('questionView'),
+    answersView: document.getElementById('answersView'),
+    howToView: document.getElementById('howToView'),
     pollView: document.getElementById('pollView'),
     savedView: document.getElementById('savedView'),
 
@@ -50,8 +66,17 @@
     questionInput: document.getElementById('questionInput'),
     questionCharCount: document.getElementById('questionCharCount'),
     questionFeedback: document.getElementById('questionFeedback'),
+    questionMeterFill: document.getElementById('questionMeterFill'),
+    questionReadinessPill: document.getElementById('questionReadinessPill'),
+    starterChips: Array.from(document.querySelectorAll('.starter-chip')),
+    toAnswersPageBtn: document.getElementById('toAnswersPageBtn'),
+
+    answersQuestionRecap: document.getElementById('answersQuestionRecap'),
+    editQuestionBackBtn: document.getElementById('editQuestionBackBtn'),
+    backToQuestionBtn: document.getElementById('backToQuestionBtn'),
     optionsList: document.getElementById('optionsList'),
     optionCountStatus: document.getElementById('optionCountStatus'),
+    answersFeedback: document.getElementById('answersFeedback'),
     addOptionBtn: document.getElementById('addOptionBtn'),
     multiChoiceToggle: document.getElementById('multiChoiceToggle'),
 
@@ -63,6 +88,7 @@
     swatchBtns: Array.from(document.querySelectorAll('.swatch-btn')),
     iconPickBtns: Array.from(document.querySelectorAll('.icon-pick-btn')),
 
+    livePreviewCard: document.getElementById('livePreviewCard'),
     previewCountdown: document.getElementById('previewCountdown'),
     previewIconSlot: document.getElementById('previewIconSlot'),
     previewIconImg: document.getElementById('previewIconImg'),
@@ -76,6 +102,9 @@
     copyLinkBtn: document.getElementById('copyLinkBtn'),
     openPollPageBtn: document.getElementById('openPollPageBtn'),
     nativeShareBtn: document.getElementById('nativeShareBtn'),
+
+    howtoJumpBtns: Array.from(document.querySelectorAll('.howto-jump-btn')),
+    faqTriggers: Array.from(document.querySelectorAll('.faq-trigger')),
 
     activePollStatusPill: document.getElementById('activePollStatusPill'),
     activePollStatusLabel: document.getElementById('activePollStatusLabel'),
@@ -108,6 +137,13 @@
     toastTimeout = setTimeout(() => {
       el.toastBanner.classList.remove('show');
     }, 2800);
+  }
+
+  function triggerJuicyPop(node) {
+    if (!node) return;
+    node.classList.remove('juicy-pop');
+    void node.offsetWidth;
+    node.classList.add('juicy-pop');
   }
 
   function resolveIconSrc(iconPath) {
@@ -284,7 +320,7 @@
   }
 
   /* ========================================================================
-     Backend Probe (Hostinger PHP Live Sync vs Static Standalone)
+     Backend Probe
      ======================================================================== */
 
   async function detectBackend() {
@@ -305,34 +341,57 @@
         }
       }
     } catch {
-      // Fallback to static URL mode silently
+      // Fallback silently
     }
     state.serverMode = false;
     el.syncModeText.textContent = 'Static Link Mode';
   }
 
   /* ========================================================================
-     View Switching & Routing
+     Page Navigation & Stepper State
      ======================================================================== */
 
-  function switchView(viewName) {
+  function navigateToPage(pageName, updateHash = true) {
     clearInterval(state.countdownTimerId);
     clearInterval(state.pollRefreshTimerId);
+    state.currentPage = pageName;
 
-    el.builderView.classList.toggle('active', viewName === 'builder');
-    el.pollView.classList.toggle('active', viewName === 'poll');
-    el.savedView.classList.toggle('active', viewName === 'saved');
+    const isBuilderPage = pageName === 'question' || pageName === 'answers';
 
-    el.navCreateBtn.classList.toggle('active', viewName === 'builder');
-    el.navSavedBtn.classList.toggle('active', viewName === 'saved');
+    el.builderProgressBar.classList.toggle('hidden', !isBuilderPage);
+    el.builderWorkspace.classList.toggle('active', isBuilderPage);
 
-    if (viewName === 'builder') {
+    el.questionView.classList.toggle('active', pageName === 'question');
+    el.answersView.classList.toggle('active', pageName === 'answers');
+    el.howToView.classList.toggle('active', pageName === 'how-to-use');
+    el.pollView.classList.toggle('active', pageName === 'poll');
+    el.savedView.classList.toggle('active', pageName === 'saved');
+
+    el.navQuestionBtn.classList.toggle('active', pageName === 'question');
+    el.navAnswersBtn.classList.toggle('active', pageName === 'answers');
+    el.navHowToBtn.classList.toggle('active', pageName === 'how-to-use');
+    el.navSavedBtn.classList.toggle('active', pageName === 'saved');
+
+    el.stepBtnQuestion.classList.toggle('active', pageName === 'question');
+    el.stepBtnAnswers.classList.toggle('active', pageName === 'answers');
+
+    if (isBuilderPage) {
       applyTheme(state.builder.theme);
-      el.syncModeBadge.title = state.serverMode
-        ? 'Connected to Hostinger live poll sync'
-        : 'Static single-page mode: poll data travels in the unique URL';
-    } else if (viewName === 'saved') {
+      el.answersQuestionRecap.textContent = state.builder.question.trim() || 'What should we do this weekend?';
+      updateLiveFeedbackMeters();
+    } else if (pageName === 'saved') {
       renderSavedPolls();
+    }
+
+    if (updateHash && pageName !== 'poll') {
+      const hashTarget = `#${pageName}`;
+      if (window.location.hash !== hashTarget) {
+        try {
+          window.history.pushState({ page: pageName }, '', `${window.location.pathname}${hashTarget}`);
+        } catch {
+          window.location.hash = hashTarget;
+        }
+      }
     }
   }
 
@@ -370,19 +429,70 @@
     try {
       window.history.pushState({ pollUrl: url }, '', url);
     } catch {
-      // ignore in sandboxed iframes
+      // ignore
     }
   }
 
-  function resetUrlToHome() {
-    if (window.location.protocol === 'file:') {
-      window.location.hash = '';
-      return;
+  /* ========================================================================
+     Live Feedback Meters (Question & Answers)
+     ======================================================================== */
+
+  function updateLiveFeedbackMeters() {
+    const q = state.builder.question.trim();
+    const len = q.length;
+
+    el.questionCharCount.textContent = `${len} / 180`;
+    el.questionCharCount.classList.toggle('warn', len >= 160);
+
+    let meterPct = 0;
+    let feedbackText = 'Start typing to activate live feedback';
+    let pillText = 'Draft';
+    let ready = false;
+
+    if (len === 0) {
+      meterPct = 0;
+    } else if (len < 8) {
+      meterPct = 32;
+      feedbackText = 'Add a little more context so friends know what to pick';
+      pillText = 'Too Short';
+    } else if (len <= 120) {
+      meterPct = Math.min(100, 45 + Math.round((len / 100) * 55));
+      feedbackText = q.endsWith('?') ? 'Great clear question ready for answers' : 'Looks clear and punchy — ready for answers';
+      pillText = 'Ready';
+      ready = true;
+    } else {
+      meterPct = 100;
+      feedbackText = 'Detailed question — keep it concise for mobile voters';
+      pillText = 'Ready';
+      ready = true;
     }
-    try {
-      window.history.pushState({}, '', window.location.pathname);
-    } catch {
-      // ignore
+
+    el.questionMeterFill.style.width = `${meterPct}%`;
+    el.questionFeedback.textContent = feedbackText;
+    el.questionReadinessPill.textContent = pillText;
+    el.questionReadinessPill.classList.toggle('ready', ready);
+
+    el.stepBtnQuestion.classList.toggle('completed', ready);
+    el.stepQuestionStatus.textContent = ready ? `"${q.slice(0, 26)}${q.length > 26 ? '...' : ''}"` : 'Waiting for question';
+    el.stepConnectorFill.style.width = ready ? '100%' : `${meterPct}%`;
+
+    const filledOpts = state.builder.options.map((o) => o.trim()).filter(Boolean);
+    const uniqueOpts = new Set(filledOpts.map((o) => o.toLowerCase()));
+    const hasDuplicates = uniqueOpts.size < filledOpts.length;
+    const answersReady = filledOpts.length >= 2 && !hasDuplicates;
+
+    el.stepBtnAnswers.classList.toggle('completed', answersReady);
+    el.stepAnswersStatus.textContent = hasDuplicates
+      ? 'Duplicate answer detected'
+      : `${filledOpts.length} of ${state.builder.options.length} filled`;
+    el.stepConnectorFill2.style.width = answersReady ? '100%' : `${Math.min(75, filledOpts.length * 30)}%`;
+
+    if (hasDuplicates) {
+      el.answersFeedback.textContent = 'Two or more answers look identical — consider making each unique.';
+    } else if (filledOpts.length < 2) {
+      el.answersFeedback.textContent = 'Fill in at least 2 answer choices to generate your unique poll page.';
+    } else {
+      el.answersFeedback.textContent = `${filledOpts.length} distinct choices ready. Click preview options to test live animation.`;
     }
   }
 
@@ -408,6 +518,7 @@
     state.builder.options.forEach((val, idx) => {
       const row = document.createElement('div');
       row.className = 'option-row';
+      row.style.animationDelay = `${idx * 35}ms`;
 
       const badge = document.createElement('span');
       badge.className = 'option-badge stroke-btn';
@@ -424,14 +535,30 @@
       input.addEventListener('input', (e) => {
         state.builder.options[idx] = e.target.value;
         input.classList.remove('is-invalid');
+        updateLiveFeedbackMeters();
         syncLivePreview();
       });
 
-      // Custom Option Icon Slot (transparent space ready for per-option icons)
       const optIconSlot = document.createElement('span');
       optIconSlot.className = 'icon-slot icon-slot-option';
       optIconSlot.dataset.iconSlot = `option-${idx + 1}`;
       optIconSlot.title = 'Optional custom icon slot';
+
+      const upBtn = document.createElement('button');
+      upBtn.type = 'button';
+      upBtn.className = 'reorder-btn stroke-btn';
+      upBtn.textContent = '^';
+      upBtn.title = 'Move option up';
+      upBtn.disabled = idx === 0;
+      upBtn.addEventListener('click', () => {
+        if (idx === 0) return;
+        const temp = state.builder.options[idx - 1];
+        state.builder.options[idx - 1] = state.builder.options[idx];
+        state.builder.options[idx] = temp;
+        renderBuilderOptionRows();
+        updateLiveFeedbackMeters();
+        syncLivePreview();
+      });
 
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
@@ -445,12 +572,14 @@
         state.previewVotes.splice(idx, 1);
         state.previewPicks = [];
         renderBuilderOptionRows();
+        updateLiveFeedbackMeters();
         syncLivePreview();
       });
 
       row.appendChild(badge);
       row.appendChild(input);
       row.appendChild(optIconSlot);
+      row.appendChild(upBtn);
       row.appendChild(removeBtn);
       el.optionsList.appendChild(row);
     });
@@ -471,6 +600,7 @@
   function syncLivePreview() {
     const qText = state.builder.question.trim() || 'What should we do this weekend?';
     el.previewQuestion.textContent = qText;
+    el.answersQuestionRecap.textContent = qText;
     el.previewMeta.textContent = `${state.builder.multiChoice ? 'Multiple choice' : 'Single choice'} · Interactive preview`;
 
     if (state.builder.icon) {
@@ -547,6 +677,7 @@
           state.previewPicks = [idx];
           state.previewVotes[idx] = (state.previewVotes[idx] || 0) + 1;
         }
+        triggerJuicyPop(el.livePreviewCard);
         syncLivePreview();
       });
 
@@ -563,10 +694,11 @@
 
     const question = state.builder.question.trim();
     if (!question) {
+      navigateToPage('question');
       el.questionInput.classList.add('is-invalid');
       el.questionFeedback.textContent = 'Please enter a poll question first.';
       el.questionInput.focus();
-      showToast('Enter a poll question to continue');
+      showToast('Enter a poll question on the Question page first');
       return;
     }
 
@@ -613,7 +745,7 @@
           shareUrl = buildShareUrl(poll, true);
         }
       } catch {
-        // Silently keep URL-encoded share link
+        // Keep URL payload fallback
       }
     }
 
@@ -623,8 +755,11 @@
 
     savePollRecord(poll);
 
+    el.stepPillShare.classList.add('completed');
+    el.stepShareStatus.textContent = 'Ready to share';
     el.generatedUrlInput.value = shareUrl;
     el.shareResultCard.classList.remove('hidden');
+    triggerJuicyPop(el.shareResultCard);
     el.shareResultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     showToast('Unique poll page generated');
@@ -641,7 +776,7 @@
     state.activeShowResults = Boolean(existingPicks) || Date.now() >= poll.expiresAt;
 
     applyTheme(poll.theme || 'sovereign');
-    switchView('poll');
+    navigateToPage('poll', false);
 
     if (updateHistoryUrl) {
       const targetUrl = poll.shareUrl || buildShareUrl(poll, state.serverMode && !poll._fromUrlPayload);
@@ -677,7 +812,7 @@
         renderActivePollOptionsOnly();
       }
     } catch {
-      // ignore background poll failures
+      // ignore
     }
   }
 
@@ -847,7 +982,7 @@
           poll.votes = data.poll.votes;
         }
       } catch {
-        // Fallback locally if transient error
+        // Fallback locally
       }
     } else {
       setLocalVoteTallies(poll.id, tallies);
@@ -857,6 +992,7 @@
     setUserPicks(poll.id, state.activeSelectedIndexes);
     state.activeShowResults = true;
     renderActivePoll();
+    triggerJuicyPop(el.activeOptionsContainer);
     showToast('Vote recorded');
   }
 
@@ -876,7 +1012,7 @@
       title.textContent = 'No Polls Generated Yet';
       const sub = document.createElement('p');
       sub.className = 'card-desc stroke-body';
-      sub.textContent = 'Create your first poll to see it saved here with its unique link.';
+      sub.textContent = 'Create your first poll on the Question and Answers pages to see it here.';
       empty.appendChild(title);
       empty.appendChild(sub);
       el.savedPollsGrid.appendChild(empty);
@@ -951,7 +1087,7 @@
   }
 
   /* ========================================================================
-     Clipboard & URL Loading
+     Clipboard & Routing
      ======================================================================== */
 
   async function copyTextToClipboard(text) {
@@ -969,7 +1105,7 @@
     }
   }
 
-  async function loadPollFromCurrentUrl() {
+  async function loadRouteFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const serverPollId = params.get('p');
     const urlPayload = params.get('poll') || (window.location.hash.startsWith('#poll=') ? window.location.hash.slice(6) : '');
@@ -1000,6 +1136,12 @@
       }
     }
 
+    const hashPage = window.location.hash.replace('#', '');
+    if (['question', 'answers', 'how-to-use', 'saved'].includes(hashPage)) {
+      navigateToPage(hashPage, false);
+      return true;
+    }
+
     return false;
   }
 
@@ -1010,39 +1152,53 @@
   function bindEvents() {
     el.brandHomeLink.addEventListener('click', (e) => {
       e.preventDefault();
-      resetUrlToHome();
-      switchView('builder');
+      navigateToPage('question');
     });
 
-    el.navCreateBtn.addEventListener('click', () => {
-      resetUrlToHome();
-      switchView('builder');
-    });
+    el.navQuestionBtn.addEventListener('click', () => navigateToPage('question'));
+    el.navAnswersBtn.addEventListener('click', () => navigateToPage('answers'));
+    el.navHowToBtn.addEventListener('click', () => navigateToPage('how-to-use'));
+    el.navSavedBtn.addEventListener('click', () => navigateToPage('saved'));
 
-    el.navSavedBtn.addEventListener('click', () => {
-      switchView('saved');
-    });
+    el.stepBtnQuestion.addEventListener('click', () => navigateToPage('question'));
+    el.stepBtnAnswers.addEventListener('click', () => navigateToPage('answers'));
+    el.editQuestionBackBtn.addEventListener('click', () => navigateToPage('question'));
+    el.backToQuestionBtn.addEventListener('click', () => navigateToPage('question'));
+    el.savedBackBtn.addEventListener('click', () => navigateToPage('question'));
+    el.backToBuilderBtn.addEventListener('click', () => navigateToPage('question'));
 
-    el.savedBackBtn.addEventListener('click', () => {
-      resetUrlToHome();
-      switchView('builder');
-    });
-
-    el.backToBuilderBtn.addEventListener('click', () => {
-      resetUrlToHome();
-      switchView('builder');
+    el.toAnswersPageBtn.addEventListener('click', () => {
+      if (!state.builder.question.trim()) {
+        el.questionInput.classList.add('is-invalid');
+        el.questionFeedback.textContent = 'Enter a question first so your friends know what they are voting on.';
+        el.questionInput.focus();
+        showToast('Write your poll question first');
+        return;
+      }
+      navigateToPage('answers');
+      const firstInput = el.optionsList.querySelector('.option-input');
+      if (firstInput && !firstInput.value.trim()) firstInput.focus();
     });
 
     el.questionInput.addEventListener('input', (e) => {
-      const val = e.target.value;
-      state.builder.question = val;
+      state.builder.question = e.target.value;
       el.questionInput.classList.remove('is-invalid');
-      el.questionFeedback.textContent = '';
-
-      const len = val.length;
-      el.questionCharCount.textContent = `${len} / 180`;
-      el.questionCharCount.classList.toggle('warn', len >= 160);
+      updateLiveFeedbackMeters();
       syncLivePreview();
+    });
+
+    el.starterChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const promptText = chip.dataset.question || '';
+        state.builder.question = promptText;
+        el.questionInput.value = promptText;
+        el.questionInput.classList.remove('is-invalid');
+        triggerJuicyPop(el.questionInput);
+        triggerJuicyPop(el.livePreviewCard);
+        updateLiveFeedbackMeters();
+        syncLivePreview();
+        showToast('Starter question applied');
+      });
     });
 
     el.addOptionBtn.addEventListener('click', () => {
@@ -1050,6 +1206,7 @@
       state.builder.options.push('');
       state.previewVotes.push(1);
       renderBuilderOptionRows();
+      updateLiveFeedbackMeters();
       syncLivePreview();
       const inputs = el.optionsList.querySelectorAll('.option-input');
       if (inputs.length) inputs[inputs.length - 1].focus();
@@ -1058,6 +1215,7 @@
     el.multiChoiceToggle.addEventListener('change', (e) => {
       state.builder.multiChoice = e.target.checked;
       state.previewPicks = [];
+      triggerJuicyPop(el.livePreviewCard);
       syncLivePreview();
     });
 
@@ -1077,6 +1235,7 @@
         } else {
           el.customDateWrap.classList.add('hidden');
         }
+        triggerJuicyPop(el.previewCountdown);
         updateExpirySummaryUI();
       });
     });
@@ -1092,6 +1251,7 @@
         btn.classList.add('active');
         state.builder.theme = btn.dataset.theme;
         applyTheme(state.builder.theme);
+        triggerJuicyPop(el.livePreviewCard);
       });
     });
 
@@ -1100,6 +1260,7 @@
         el.iconPickBtns.forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
         state.builder.icon = btn.dataset.icon || '';
+        triggerJuicyPop(el.previewIconSlot);
         syncLivePreview();
       });
     });
@@ -1107,6 +1268,7 @@
     el.resetPreviewVotesBtn.addEventListener('click', () => {
       state.previewVotes = state.builder.options.map(() => 0);
       state.previewPicks = [];
+      triggerJuicyPop(el.livePreviewCard);
       syncLivePreview();
     });
 
@@ -1139,6 +1301,22 @@
       copyTextToClipboard(url);
     });
 
+    el.howtoJumpBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.jump || 'question';
+        navigateToPage(target);
+      });
+    });
+
+    el.faqTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.faq-item');
+        if (!item) return;
+        const isOpen = item.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', String(isOpen));
+      });
+    });
+
     el.castVoteBtn.addEventListener('click', handleCastVote);
 
     el.toggleResultsViewBtn.addEventListener('click', () => {
@@ -1153,8 +1331,8 @@
     });
 
     window.addEventListener('popstate', async () => {
-      const loaded = await loadPollFromCurrentUrl();
-      if (!loaded) switchView('builder');
+      const loaded = await loadRouteFromUrl();
+      if (!loaded) navigateToPage('question', false);
     });
   }
 
@@ -1162,13 +1340,14 @@
     el.customExpiryInput.min = toDatetimeLocalValue(Date.now() + 60 * 1000);
     updateSavedCountBadge();
     renderBuilderOptionRows();
+    updateLiveFeedbackMeters();
     syncLivePreview();
     bindEvents();
 
     await detectBackend();
-    const openedFromUrl = await loadPollFromCurrentUrl();
-    if (!openedFromUrl) {
-      switchView('builder');
+    const routed = await loadRouteFromUrl();
+    if (!routed) {
+      navigateToPage('question', false);
     }
   }
 

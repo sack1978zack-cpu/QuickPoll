@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QuickPoll — Instant Poll Generator</title>
   <meta name="description" content="Create custom polls with live expiry timers and unique shareable links in seconds." />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7516098019742511"
+     crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -24,7 +26,7 @@
   <!-- Top Navigation Header -->
   <header class="site-header">
     <div class="header-inner">
-      <a href="./" id="brandHomeLink" class="brand-lockup" aria-label="QuickPoll Home">
+      <a href="#question" id="brandHomeLink" class="brand-lockup" aria-label="QuickPoll Home">
         <!-- ICON SLOT: Brand Logo (transparent PNG; replace assets/logo.png to customize) -->
         <span class="icon-slot icon-slot-logo" data-icon-slot="logo">
           <img src="assets/logo.png" alt="QuickPoll Logo" class="slot-img" />
@@ -35,23 +37,29 @@
         </span>
       </a>
 
-      <nav class="header-actions" aria-label="Primary actions">
-        <span id="syncModeBadge" class="status-pill stroke-subtle" title="Storage and sync mode">
-          <span class="pulse-dot"></span>
-          <span id="syncModeText">Ready</span>
-        </span>
+      <nav class="header-actions" aria-label="Primary pages">
+        <button type="button" id="navQuestionBtn" class="btn btn-nav stroke-btn active" data-page="question">
+          Question
+        </button>
+        <button type="button" id="navAnswersBtn" class="btn btn-nav stroke-btn" data-page="answers">
+          Answers
+        </button>
+        <button type="button" id="navHowToBtn" class="btn btn-nav stroke-btn" data-page="how-to-use">
+          How to Use
+        </button>
+        <button type="button" id="navSavedBtn" class="btn btn-nav stroke-btn" data-page="saved">
+          My Polls <span id="savedCountBadge" class="count-pill">0</span>
+        </button>
 
         <!-- ICON SLOT: Header Custom Badge (leave or place your own custom icon inside) -->
         <span class="icon-slot icon-slot-optional" data-icon-slot="custom-header" title="Custom icon slot">
           <!-- Add your own <img> or <svg> icon here -->
         </span>
 
-        <button type="button" id="navCreateBtn" class="btn btn-gold stroke-btn active">
-          New Poll
-        </button>
-        <button type="button" id="navSavedBtn" class="btn btn-dark stroke-btn">
-          My Polls <span id="savedCountBadge" class="count-pill">0</span>
-        </button>
+        <span id="syncModeBadge" class="status-pill stroke-subtle" title="Storage and sync mode">
+          <span class="pulse-dot"></span>
+          <span id="syncModeText">Ready</span>
+        </span>
       </nav>
     </div>
   </header>
@@ -62,160 +70,257 @@
   <!-- MAIN SINGLE-PAGE APPLICATION -->
   <main class="app-shell">
 
-    <!-- ==================== VIEW 1: POLL BUILDER + LIVE PREVIEW ==================== -->
-    <section id="builderView" class="view-section active" aria-labelledby="builderHeading">
+    <!-- ==================== BUILDER STEP TRACKER (Shown on Question & Answers Pages) ==================== -->
+    <div id="builderProgressBar" class="builder-progress-shell">
       <div class="hero-strip">
-        <div class="hero-copy">
-          <p class="eyebrow stroke-subtle">Gold · Black · Blue · Purple · Red Edition</p>
-          <h1 id="builderHeading" class="hero-title stroke-display">
-            Build a Poll. Share the Unique Link. Watch Votes Live.
-          </h1>
-          <p class="hero-lead stroke-body">
-            Enter your question and answers, set an exact expiration timer, and generate a dedicated poll page you can send to friends right away.
-          </p>
-        </div>
+        <p class="eyebrow stroke-subtle">Gold · Black · Blue · Purple · Red Edition</p>
+        <h1 class="hero-title stroke-display">
+          Build a Poll. Share the Unique Link. Watch Votes Live.
+        </h1>
       </div>
 
+      <div class="stepper-bar glass-mini" role="navigation" aria-label="Poll creation steps">
+        <button type="button" id="stepBtnQuestion" class="step-pill active" data-step="question">
+          <span class="step-num stroke-btn">1</span>
+          <span class="step-copy">
+            <span class="step-title stroke-label">Question Page</span>
+            <span id="stepQuestionStatus" class="step-status stroke-subtle">Waiting for question</span>
+          </span>
+        </button>
+
+        <div class="step-connector" aria-hidden="true">
+          <div id="stepConnectorFill" class="step-connector-fill"></div>
+        </div>
+
+        <button type="button" id="stepBtnAnswers" class="step-pill" data-step="answers">
+          <span class="step-num stroke-btn">2</span>
+          <span class="step-copy">
+            <span class="step-title stroke-label">Answers &amp; Expiry</span>
+            <span id="stepAnswersStatus" class="step-status stroke-subtle">2 options ready</span>
+          </span>
+        </button>
+
+        <div class="step-connector" aria-hidden="true">
+          <div id="stepConnectorFill2" class="step-connector-fill"></div>
+        </div>
+
+        <div id="stepPillShare" class="step-pill step-pill-static">
+          <span class="step-num stroke-btn">3</span>
+          <span class="step-copy">
+            <span class="step-title stroke-label">Unique Poll Link</span>
+            <span id="stepShareStatus" class="step-status stroke-subtle">Generate to share</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== WORKSPACE: QUESTION & ANSWERS PAGES + LIVE PREVIEW ==================== -->
+    <section id="builderWorkspace" class="workspace-section active">
       <div class="workspace-grid">
-        <!-- LEFT COLUMN: POLL GENERATOR FORM -->
-        <form id="pollForm" class="glass-card builder-card" novalidate>
-          <div class="card-header-row">
-            <!-- ICON SLOT: Poll Question Section Icon -->
-            <div class="icon-slot icon-slot-md" data-icon-slot="question">
-              <img src="assets/icon-poll.png" alt="Poll Icon" class="slot-img" />
-            </div>
-            <div>
-              <h2 class="card-title stroke-heading">Poll Details</h2>
-              <p class="card-desc stroke-body">Live preview updates as you type</p>
-            </div>
-          </div>
 
-          <!-- Question Input -->
-          <div class="field-group">
-            <div class="label-row">
-              <label for="questionInput" class="field-label stroke-label">Your Question</label>
-              <span id="questionCharCount" class="live-counter stroke-subtle">0 / 180</span>
-            </div>
-            <textarea
-              id="questionInput"
-              class="field-input field-textarea stroke-body"
-              rows="2"
-              maxlength="180"
-              placeholder="What should we do this weekend?"
-              required
-            ></textarea>
-            <div id="questionFeedback" class="field-feedback stroke-subtle"></div>
-          </div>
+        <!-- LEFT COLUMN: SWITCHABLE QUESTION PAGE & ANSWERS PAGE -->
+        <div class="pages-stage">
 
-          <!-- Answer Options -->
-          <div class="field-group">
-            <div class="label-row">
-              <label class="field-label stroke-label">Answer Options</label>
-              <span id="optionCountStatus" class="live-counter stroke-subtle">2 of 8 options</span>
-            </div>
-
-            <div id="optionsList" class="options-builder-list">
-              <!-- Dynamically rendered option rows with icon slots -->
-            </div>
-
-            <div class="option-actions-row">
-              <button type="button" id="addOptionBtn" class="btn btn-outline-gradient stroke-btn">
-                + Add Answer Option
-              </button>
-              <label class="toggle-chip stroke-subtle">
-                <input type="checkbox" id="multiChoiceToggle" />
-                <span class="toggle-track"><span class="toggle-thumb"></span></span>
-                <span>Allow multiple picks</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Expiry Configuration -->
-          <div class="field-group expiry-panel">
-            <div class="card-header-row compact">
-              <!-- ICON SLOT: Expiry Timer Icon -->
-              <div class="icon-slot icon-slot-md" data-icon-slot="expiry">
-                <img src="assets/icon-timer.png" alt="Expiry Timer Icon" class="slot-img" />
+          <!-- PAGE 1: QUESTION DESIGNER PAGE -->
+          <section id="questionView" class="view-section page-card active" aria-labelledby="questionPageHeading">
+            <div class="glass-card builder-card">
+              <div class="card-header-row">
+                <!-- ICON SLOT: Question Page Icon -->
+                <div class="icon-slot icon-slot-md" data-icon-slot="question">
+                  <img src="assets/icon-poll.png" alt="Poll Question Icon" class="slot-img" />
+                </div>
+                <div>
+                  <h2 id="questionPageHeading" class="card-title stroke-heading">Step 1: Craft Your Question</h2>
+                  <p class="card-desc stroke-body">Type your question below and watch the live preview respond instantly</p>
+                </div>
               </div>
-              <div>
-                <label class="field-label stroke-label">When Should This Poll Expire?</label>
-                <p id="expiryLiveSummary" class="card-desc stroke-body">Expires in 24 hours</p>
+
+              <div class="field-group">
+                <div class="label-row">
+                  <label for="questionInput" class="field-label stroke-label">Your Poll Question</label>
+                  <span id="questionCharCount" class="live-counter stroke-subtle">0 / 180</span>
+                </div>
+
+                <textarea
+                  id="questionInput"
+                  class="field-input field-textarea stroke-body"
+                  rows="3"
+                  maxlength="180"
+                  placeholder="What should we do this weekend?"
+                  required
+                ></textarea>
+
+                <!-- Juicy Live Feedback Meter -->
+                <div class="live-meter-wrap">
+                  <div class="live-meter-track">
+                    <div id="questionMeterFill" class="live-meter-fill"></div>
+                  </div>
+                  <div class="live-meter-meta">
+                    <span id="questionFeedback" class="field-feedback stroke-subtle">Start typing to activate live feedback</span>
+                    <span id="questionReadinessPill" class="readiness-pill stroke-subtle">Draft</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div class="preset-pills" role="group" aria-label="Expiry presets">
-              <button type="button" class="preset-pill stroke-btn" data-minutes="15">15 Mins</button>
-              <button type="button" class="preset-pill stroke-btn" data-minutes="60">1 Hour</button>
-              <button type="button" class="preset-pill stroke-btn" data-minutes="360">6 Hours</button>
-              <button type="button" class="preset-pill stroke-btn active" data-minutes="1440">24 Hours</button>
-              <button type="button" class="preset-pill stroke-btn" data-minutes="4320">3 Days</button>
-              <button type="button" class="preset-pill stroke-btn" data-minutes="10080">7 Days</button>
-              <button type="button" class="preset-pill stroke-btn" data-minutes="custom">Custom Date</button>
-            </div>
-
-            <div id="customDateWrap" class="custom-date-wrap hidden">
-              <label for="customExpiryInput" class="field-label stroke-label">Exact Expiry Date &amp; Time</label>
-              <input type="datetime-local" id="customExpiryInput" class="field-input stroke-body" />
-            </div>
-          </div>
-
-          <!-- Gradient Style & Custom Poll Icon Slot Picker -->
-          <div class="field-group style-row">
-            <div class="style-col">
-              <span class="field-label stroke-label">Gradient Palette</span>
-              <div class="theme-swatches" role="group" aria-label="Poll color gradient">
-                <button type="button" class="swatch-btn active" data-theme="sovereign" title="Gold + Purple + Blue + Red">
-                  <span class="swatch-dot swatch-sovereign"></span>
-                  <span class="stroke-subtle">All-Star</span>
-                </button>
-                <button type="button" class="swatch-btn" data-theme="crimson-gold" title="Crimson Red + Gold">
-                  <span class="swatch-dot swatch-crimson"></span>
-                  <span class="stroke-subtle">Red Gold</span>
-                </button>
-                <button type="button" class="swatch-btn" data-theme="cobalt-purple" title="Electric Blue + Royal Purple">
-                  <span class="swatch-dot swatch-cobalt"></span>
-                  <span class="stroke-subtle">Blue Violet</span>
-                </button>
+              <!-- Quick Starter Prompts -->
+              <div class="field-group">
+                <span class="field-label stroke-label">Quick Inspiration Starters</span>
+                <div class="starter-chips" role="group" aria-label="Question starters">
+                  <button type="button" class="starter-chip stroke-btn" data-question="What should we eat tonight?">Dinner Pick</button>
+                  <button type="button" class="starter-chip stroke-btn" data-question="Which game are we playing next?">Game Night</button>
+                  <button type="button" class="starter-chip stroke-btn" data-question="What time works best for everyone?">Meetup Time</button>
+                  <button type="button" class="starter-chip stroke-btn" data-question="Which movie should we watch?">Movie Night</button>
+                </div>
               </div>
-            </div>
 
-            <div class="style-col">
-              <span class="field-label stroke-label">Poll Icon Slot</span>
-              <div class="icon-picker-row" role="group" aria-label="Choose poll badge icon">
-                <button type="button" class="icon-pick-btn active" data-icon="assets/icon-vote.png" title="Vote Shield">
-                  <img src="assets/icon-vote.png" alt="Vote Shield" />
-                </button>
-                <button type="button" class="icon-pick-btn" data-icon="assets/icon-poll.png" title="Poll Bars">
-                  <img src="assets/icon-poll.png" alt="Poll Bars" />
-                </button>
-                <button type="button" class="icon-pick-btn" data-icon="assets/icon-timer.png" title="Timer">
-                  <img src="assets/icon-timer.png" alt="Timer" />
-                </button>
-                <button type="button" class="icon-pick-btn" data-icon="assets/icon-share.png" title="Share Pulse">
-                  <img src="assets/icon-share.png" alt="Share Pulse" />
-                </button>
-                <button type="button" class="icon-pick-btn icon-pick-empty" data-icon="" title="Empty / Leave Space for Custom Icon">
-                  <span class="stroke-subtle">None</span>
+              <!-- Gradient Style & Custom Poll Icon Slot Picker -->
+              <div class="field-group style-row">
+                <div class="style-col">
+                  <span class="field-label stroke-label">Gradient Palette</span>
+                  <div class="theme-swatches" role="group" aria-label="Poll color gradient">
+                    <button type="button" class="swatch-btn active" data-theme="sovereign" title="Gold + Purple + Blue + Red">
+                      <span class="swatch-dot swatch-sovereign"></span>
+                      <span class="stroke-subtle">All-Star</span>
+                    </button>
+                    <button type="button" class="swatch-btn" data-theme="crimson-gold" title="Crimson Red + Gold">
+                      <span class="swatch-dot swatch-crimson"></span>
+                      <span class="stroke-subtle">Red Gold</span>
+                    </button>
+                    <button type="button" class="swatch-btn" data-theme="cobalt-purple" title="Electric Blue + Royal Purple">
+                      <span class="swatch-dot swatch-cobalt"></span>
+                      <span class="stroke-subtle">Blue Violet</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="style-col">
+                  <span class="field-label stroke-label">Poll Icon Slot</span>
+                  <div class="icon-picker-row" role="group" aria-label="Choose poll badge icon">
+                    <button type="button" class="icon-pick-btn active" data-icon="assets/icon-vote.png" title="Vote Shield">
+                      <img src="assets/icon-vote.png" alt="Vote Shield" />
+                    </button>
+                    <button type="button" class="icon-pick-btn" data-icon="assets/icon-poll.png" title="Poll Bars">
+                      <img src="assets/icon-poll.png" alt="Poll Bars" />
+                    </button>
+                    <button type="button" class="icon-pick-btn" data-icon="assets/icon-timer.png" title="Timer">
+                      <img src="assets/icon-timer.png" alt="Timer" />
+                    </button>
+                    <button type="button" class="icon-pick-btn" data-icon="assets/icon-share.png" title="Share Pulse">
+                      <img src="assets/icon-share.png" alt="Share Pulse" />
+                    </button>
+                    <button type="button" class="icon-pick-btn icon-pick-empty" data-icon="" title="Empty / Leave Space for Custom Icon">
+                      <span class="stroke-subtle">None</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="page-nav-footer">
+                <button type="button" id="toAnswersPageBtn" class="btn btn-primary-gradient btn-lg stroke-btn">
+                  <span>Next: Set Answers &amp; Expiry</span>
+                  <span class="btn-arrow">-&gt;</span>
                 </button>
               </div>
             </div>
-          </div>
+          </section>
 
-          <!-- Generate CTA -->
-          <div class="submit-row">
-            <button type="submit" id="generatePollBtn" class="btn btn-primary-gradient btn-lg stroke-btn">
-              <!-- ICON SLOT: Share / Generate Icon -->
-              <span class="icon-slot icon-slot-sm" data-icon-slot="share-cta">
-                <img src="assets/icon-share.png" alt="" class="slot-img" />
-              </span>
-              <span>Generate Unique Poll Page</span>
-            </button>
-          </div>
-        </form>
+          <!-- PAGE 2: ANSWERS & EXPIRY STUDIO PAGE -->
+          <section id="answersView" class="view-section page-card" aria-labelledby="answersPageHeading">
+            <form id="pollForm" class="glass-card builder-card" novalidate>
+              <div class="card-header-row">
+                <!-- ICON SLOT: Answers Page Icon -->
+                <div class="icon-slot icon-slot-md" data-icon-slot="answers">
+                  <img src="assets/icon-vote.png" alt="Answers Icon" class="slot-img" />
+                </div>
+                <div>
+                  <h2 id="answersPageHeading" class="card-title stroke-heading">Step 2: Answers &amp; Expiry</h2>
+                  <p class="card-desc stroke-body">Add up to 8 answers, reorder them live, and set when voting closes</p>
+                </div>
+              </div>
 
-        <!-- RIGHT COLUMN: LIVE INTERACTIVE PREVIEW -->
+              <!-- Live Question Banner Summary -->
+              <div class="question-recap-bar">
+                <div class="recap-copy">
+                  <span class="recap-label stroke-subtle">Active Question</span>
+                  <p id="answersQuestionRecap" class="recap-text stroke-label">What should we do this weekend?</p>
+                </div>
+                <button type="button" id="editQuestionBackBtn" class="btn btn-dark btn-sm stroke-btn">Edit Question</button>
+              </div>
+
+              <!-- Answer Options -->
+              <div class="field-group">
+                <div class="label-row">
+                  <label class="field-label stroke-label">Answer Options</label>
+                  <span id="optionCountStatus" class="live-counter stroke-subtle">2 of 8 options</span>
+                </div>
+
+                <div id="optionsList" class="options-builder-list">
+                  <!-- Dynamically rendered option rows with reorder + icon slots -->
+                </div>
+
+                <div id="answersFeedback" class="field-feedback stroke-subtle"></div>
+
+                <div class="option-actions-row">
+                  <button type="button" id="addOptionBtn" class="btn btn-outline-gradient stroke-btn">
+                    + Add Answer Option
+                  </button>
+                  <label class="toggle-chip stroke-subtle">
+                    <input type="checkbox" id="multiChoiceToggle" />
+                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                    <span>Allow multiple picks</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Expiry Configuration -->
+              <div class="field-group expiry-panel">
+                <div class="card-header-row compact">
+                  <!-- ICON SLOT: Expiry Timer Icon -->
+                  <div class="icon-slot icon-slot-md" data-icon-slot="expiry">
+                    <img src="assets/icon-timer.png" alt="Expiry Timer Icon" class="slot-img" />
+                  </div>
+                  <div>
+                    <label class="field-label stroke-label">When Should This Poll Expire?</label>
+                    <p id="expiryLiveSummary" class="card-desc stroke-body">Expires in 24 hours</p>
+                  </div>
+                </div>
+
+                <div class="preset-pills" role="group" aria-label="Expiry presets">
+                  <button type="button" class="preset-pill stroke-btn" data-minutes="15">15 Mins</button>
+                  <button type="button" class="preset-pill stroke-btn" data-minutes="60">1 Hour</button>
+                  <button type="button" class="preset-pill stroke-btn" data-minutes="360">6 Hours</button>
+                  <button type="button" class="preset-pill stroke-btn active" data-minutes="1440">24 Hours</button>
+                  <button type="button" class="preset-pill stroke-btn" data-minutes="4320">3 Days</button>
+                  <button type="button" class="preset-pill stroke-btn" data-minutes="10080">7 Days</button>
+                  <button type="button" class="preset-pill stroke-btn" data-minutes="custom">Custom Date</button>
+                </div>
+
+                <div id="customDateWrap" class="custom-date-wrap hidden">
+                  <label for="customExpiryInput" class="field-label stroke-label">Exact Expiry Date &amp; Time</label>
+                  <input type="datetime-local" id="customExpiryInput" class="field-input stroke-body" />
+                </div>
+              </div>
+
+              <div class="page-nav-footer split">
+                <button type="button" id="backToQuestionBtn" class="btn btn-dark stroke-btn">
+                  &lt;- Question
+                </button>
+                <button type="submit" id="generatePollBtn" class="btn btn-primary-gradient btn-lg stroke-btn">
+                  <!-- ICON SLOT: Share / Generate Icon -->
+                  <span class="icon-slot icon-slot-sm" data-icon-slot="share-cta">
+                    <img src="assets/icon-share.png" alt="" class="slot-img" />
+                  </span>
+                  <span>Generate Unique Poll Page</span>
+                </button>
+              </div>
+            </form>
+          </section>
+
+        </div>
+
+        <!-- RIGHT COLUMN: PERSISTENT LIVE INTERACTIVE PREVIEW -->
         <aside class="preview-column" aria-label="Live Poll Preview">
-          <div class="glass-card preview-card">
+          <div id="livePreviewCard" class="glass-card preview-card">
             <div class="preview-top-bar">
               <span class="live-badge stroke-subtle">
                 <span class="pulse-dot"></span>
@@ -249,7 +354,7 @@
             </div>
           </div>
 
-          <!-- Generated Share Link Card (Reveals immediately upon generation) -->
+          <!-- Generated Share Link Card -->
           <div id="shareResultCard" class="glass-card share-card hidden">
             <div class="card-header-row compact">
               <!-- ICON SLOT: Share Result Icon -->
@@ -277,10 +382,146 @@
             </div>
           </div>
         </aside>
+
       </div>
     </section>
 
-    <!-- ==================== VIEW 2: DEDICATED UNIQUE POLL PAGE ==================== -->
+    <!-- ==================== PAGE 3: HOW TO USE PAGE ==================== -->
+    <section id="howToView" class="view-section" aria-labelledby="howToHeading">
+      <div class="howto-hero glass-card">
+        <div class="howto-hero-row">
+          <div class="icon-slot icon-slot-xl" data-icon-slot="howto-hero">
+            <img src="assets/logo.png" alt="QuickPoll Guide" class="slot-img" />
+          </div>
+          <div>
+            <p class="eyebrow stroke-subtle">Step-By-Step Guide</p>
+            <h1 id="howToHeading" class="hero-title stroke-display">How to Use QuickPoll</h1>
+            <p class="hero-lead stroke-body">
+              Create, customize, share, and track live polls in under 30 seconds. Follow the steps below to launch your first poll or embed QuickPoll on your website.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="howto-steps-grid">
+        <article class="glass-card howto-step-card">
+          <div class="howto-step-head">
+            <span class="step-badge stroke-btn">STEP 01</span>
+            <div class="icon-slot icon-slot-md" data-icon-slot="howto-step-1">
+              <img src="assets/icon-poll.png" alt="Step 1 Question Icon" class="slot-img" />
+            </div>
+          </div>
+          <h2 class="card-title stroke-heading">Write Your Question</h2>
+          <p class="card-desc stroke-body">
+            Open the Question page, type your prompt, or tap an inspiration starter. Watch the live readiness meter and real-time preview update on every keystroke, and pick your favorite Gold, Black, Blue, Purple, and Red gradient style.
+          </p>
+          <button type="button" class="btn btn-outline-gradient stroke-btn howto-jump-btn" data-jump="question">
+            Go to Question Page
+          </button>
+        </article>
+
+        <article class="glass-card howto-step-card">
+          <div class="howto-step-head">
+            <span class="step-badge stroke-btn">STEP 02</span>
+            <div class="icon-slot icon-slot-md" data-icon-slot="howto-step-2">
+              <img src="assets/icon-timer.png" alt="Step 2 Answers and Expiry Icon" class="slot-img" />
+            </div>
+          </div>
+          <h2 class="card-title stroke-heading">Add Answers &amp; Expiry</h2>
+          <p class="card-desc stroke-body">
+            Move to the Answers page to add between 2 and 8 choices, reorder them anytime, or enable multiple picks. Choose a quick expiration preset or set an exact date and time for automatic closing.
+          </p>
+          <button type="button" class="btn btn-outline-gradient stroke-btn howto-jump-btn" data-jump="answers">
+            Go to Answers Page
+          </button>
+        </article>
+
+        <article class="glass-card howto-step-card">
+          <div class="howto-step-head">
+            <span class="step-badge stroke-btn">STEP 03</span>
+            <div class="icon-slot icon-slot-md" data-icon-slot="howto-step-3">
+              <img src="assets/icon-share.png" alt="Step 3 Share Link Icon" class="slot-img" />
+            </div>
+          </div>
+          <h2 class="card-title stroke-heading">Share the Unique Link</h2>
+          <p class="card-desc stroke-body">
+            Click Generate Unique Poll Page to create your shareable poll URL. Send it to friends via chat or social apps. Anyone opening the link sees the dedicated poll page with a live second-by-second countdown.
+          </p>
+          <button type="button" class="btn btn-gold stroke-btn howto-jump-btn" data-jump="saved">
+            Open My Polls
+          </button>
+        </article>
+
+        <article class="glass-card howto-step-card">
+          <div class="howto-step-head">
+            <span class="step-badge stroke-btn">STEP 04</span>
+            <div class="icon-slot icon-slot-md" data-icon-slot="howto-step-4">
+              <img src="assets/icon-vote.png" alt="Step 4 Voting and Icons Icon" class="slot-img" />
+            </div>
+          </div>
+          <h2 class="card-title stroke-heading">Watch Live Results &amp; Add Icons</h2>
+          <p class="card-desc stroke-body">
+            When friends vote, animated gradient bars highlight the leading option in real time. Once the countdown hits zero, voting locks automatically. You can also place your own transparent PNG or SVG icons into any marked icon slot in the HTML.
+          </p>
+          <button type="button" class="btn btn-primary-gradient stroke-btn howto-jump-btn" data-jump="question">
+            Start Creating Now
+          </button>
+        </article>
+      </div>
+
+      <!-- Interactive FAQ Accordion -->
+      <div class="glass-card faq-card">
+        <div class="card-header-row">
+          <div class="icon-slot icon-slot-md" data-icon-slot="howto-faq">
+            <img src="assets/icon-vote.png" alt="FAQ Icon" class="slot-img" />
+          </div>
+          <div>
+            <h2 class="card-title stroke-heading">Frequently Asked Questions</h2>
+            <p class="card-desc stroke-body">Click any question below to expand details</p>
+          </div>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item open">
+            <button type="button" class="faq-trigger stroke-label" aria-expanded="true">
+              <span>How do shared votes work across my friends' phones?</span>
+              <span class="faq-plus">+</span>
+            </button>
+            <div class="faq-body">
+              <p class="stroke-body">
+                When hosted on Hostinger with PHP enabled, QuickPoll automatically activates Live Server Sync via poll-api.php, storing tallies on your server so all friends see combined live results. On static-only hosting or embedded widgets, it runs in Static Link Mode where the question, options, and expiry travel safely inside the URL.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-trigger stroke-label" aria-expanded="false">
+              <span>What happens when a poll expires?</span>
+              <span class="faq-plus">+</span>
+            </button>
+            <div class="faq-body">
+              <p class="stroke-body">
+                As soon as the countdown timer reaches zero, the status pill switches to EXPIRED, voting buttons lock automatically, and everyone viewing the link sees the final winning breakdown.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-trigger stroke-label" aria-expanded="false">
+              <span>Where can I add my own custom icons?</span>
+              <span class="faq-plus">+</span>
+            </button>
+            <div class="faq-body">
+              <p class="stroke-body">
+                Every icon location in index.html uses a data-icon-slot attribute, including an open custom slot in the header and slots next to each answer option. Drop any transparent PNG or SVG inside those slots, or select None in the Poll Icon Slot picker.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PAGE 4: DEDICATED UNIQUE POLL PAGE ==================== -->
     <section id="pollView" class="view-section" aria-labelledby="activePollQuestion">
       <div class="poll-page-wrap">
         <div class="glass-card active-poll-card">
@@ -343,7 +584,7 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 3: SAVED POLLS HISTORY ==================== -->
+    <!-- ==================== PAGE 5: SAVED POLLS HISTORY ==================== -->
     <section id="savedView" class="view-section" aria-labelledby="savedHeading">
       <div class="glass-card saved-card">
         <div class="saved-header">
