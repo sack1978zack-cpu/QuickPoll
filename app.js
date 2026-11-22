@@ -1,6 +1,6 @@
 /* ==========================================================================
    QuickPoll Single-Page Application
-   Pages: Question | Answers | How to Use | My Polls | Unique Poll Page
+   Pages: Create Poll | How to Use | Q&A | Privacy | My Polls | Unique Poll
    Supports Hostinger PHP Live Sync (poll-api.php) and Static URL Mode
    ========================================================================== */
 (() => {
@@ -12,7 +12,7 @@
 
   const state = {
     serverMode: false,
-    currentPage: 'question',
+    currentPage: 'create',
     builder: {
       question: '',
       options: ['', ''],
@@ -38,42 +38,26 @@
     brandHomeLink: document.getElementById('brandHomeLink'),
     syncModeBadge: document.getElementById('syncModeBadge'),
     syncModeText: document.getElementById('syncModeText'),
-    navQuestionBtn: document.getElementById('navQuestionBtn'),
-    navAnswersBtn: document.getElementById('navAnswersBtn'),
+    navCreateBtn: document.getElementById('navCreateBtn'),
     navHowToBtn: document.getElementById('navHowToBtn'),
+    navQaBtn: document.getElementById('navQaBtn'),
+    navPrivacyBtn: document.getElementById('navPrivacyBtn'),
     navSavedBtn: document.getElementById('navSavedBtn'),
     savedCountBadge: document.getElementById('savedCountBadge'),
     toastBanner: document.getElementById('toastBanner'),
 
-    builderProgressBar: document.getElementById('builderProgressBar'),
-    builderWorkspace: document.getElementById('builderWorkspace'),
-    stepBtnQuestion: document.getElementById('stepBtnQuestion'),
-    stepBtnAnswers: document.getElementById('stepBtnAnswers'),
-    stepPillShare: document.getElementById('stepPillShare'),
-    stepQuestionStatus: document.getElementById('stepQuestionStatus'),
-    stepAnswersStatus: document.getElementById('stepAnswersStatus'),
-    stepShareStatus: document.getElementById('stepShareStatus'),
-    stepConnectorFill: document.getElementById('stepConnectorFill'),
-    stepConnectorFill2: document.getElementById('stepConnectorFill2'),
-
-    questionView: document.getElementById('questionView'),
-    answersView: document.getElementById('answersView'),
+    createView: document.getElementById('createView'),
     howToView: document.getElementById('howToView'),
+    qaView: document.getElementById('qaView'),
+    privacyView: document.getElementById('privacyView'),
     pollView: document.getElementById('pollView'),
     savedView: document.getElementById('savedView'),
 
     pollForm: document.getElementById('pollForm'),
     questionInput: document.getElementById('questionInput'),
     questionCharCount: document.getElementById('questionCharCount'),
-    questionFeedback: document.getElementById('questionFeedback'),
     questionMeterFill: document.getElementById('questionMeterFill'),
-    questionReadinessPill: document.getElementById('questionReadinessPill'),
-    starterChips: Array.from(document.querySelectorAll('.starter-chip')),
-    toAnswersPageBtn: document.getElementById('toAnswersPageBtn'),
-
-    answersQuestionRecap: document.getElementById('answersQuestionRecap'),
-    editQuestionBackBtn: document.getElementById('editQuestionBackBtn'),
-    backToQuestionBtn: document.getElementById('backToQuestionBtn'),
+    questionFeedback: document.getElementById('questionFeedback'),
     optionsList: document.getElementById('optionsList'),
     optionCountStatus: document.getElementById('optionCountStatus'),
     answersFeedback: document.getElementById('answersFeedback'),
@@ -103,7 +87,8 @@
     openPollPageBtn: document.getElementById('openPollPageBtn'),
     nativeShareBtn: document.getElementById('nativeShareBtn'),
 
-    howtoJumpBtns: Array.from(document.querySelectorAll('.howto-jump-btn')),
+    jumpCreateBtns: Array.from(document.querySelectorAll('.jump-create-btn')),
+    footerNavLinks: Array.from(document.querySelectorAll('.footer-nav-link')),
     faqTriggers: Array.from(document.querySelectorAll('.faq-trigger')),
 
     activePollStatusPill: document.getElementById('activePollStatusPill'),
@@ -136,7 +121,7 @@
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
       el.toastBanner.classList.remove('show');
-    }, 2800);
+    }, 2600);
   }
 
   function triggerJuicyPop(node) {
@@ -326,7 +311,7 @@
   async function detectBackend() {
     if (window.location.protocol === 'file:' || window.QUICKPOLL_ASSET_DATA) {
       state.serverMode = false;
-      el.syncModeText.textContent = 'Static Link Mode';
+      el.syncModeText.textContent = 'Link Mode';
       return;
     }
     try {
@@ -336,7 +321,7 @@
         const data = await res.json();
         if (data && data.ok) {
           state.serverMode = true;
-          el.syncModeText.textContent = 'Live Server Sync';
+          el.syncModeText.textContent = 'Live Sync';
           return;
         }
       }
@@ -344,11 +329,11 @@
       // Fallback silently
     }
     state.serverMode = false;
-    el.syncModeText.textContent = 'Static Link Mode';
+    el.syncModeText.textContent = 'Link Mode';
   }
 
   /* ========================================================================
-     Page Navigation & Stepper State
+     Navigation & Routing
      ======================================================================== */
 
   function navigateToPage(pageName, updateHash = true) {
@@ -356,29 +341,21 @@
     clearInterval(state.pollRefreshTimerId);
     state.currentPage = pageName;
 
-    const isBuilderPage = pageName === 'question' || pageName === 'answers';
-
-    el.builderProgressBar.classList.toggle('hidden', !isBuilderPage);
-    el.builderWorkspace.classList.toggle('active', isBuilderPage);
-
-    el.questionView.classList.toggle('active', pageName === 'question');
-    el.answersView.classList.toggle('active', pageName === 'answers');
+    el.createView.classList.toggle('active', pageName === 'create');
     el.howToView.classList.toggle('active', pageName === 'how-to-use');
+    el.qaView.classList.toggle('active', pageName === 'qa');
+    el.privacyView.classList.toggle('active', pageName === 'privacy');
     el.pollView.classList.toggle('active', pageName === 'poll');
     el.savedView.classList.toggle('active', pageName === 'saved');
 
-    el.navQuestionBtn.classList.toggle('active', pageName === 'question');
-    el.navAnswersBtn.classList.toggle('active', pageName === 'answers');
+    el.navCreateBtn.classList.toggle('active', pageName === 'create');
     el.navHowToBtn.classList.toggle('active', pageName === 'how-to-use');
+    el.navQaBtn.classList.toggle('active', pageName === 'qa');
+    el.navPrivacyBtn.classList.toggle('active', pageName === 'privacy');
     el.navSavedBtn.classList.toggle('active', pageName === 'saved');
 
-    el.stepBtnQuestion.classList.toggle('active', pageName === 'question');
-    el.stepBtnAnswers.classList.toggle('active', pageName === 'answers');
-
-    if (isBuilderPage) {
+    if (pageName === 'create') {
       applyTheme(state.builder.theme);
-      el.answersQuestionRecap.textContent = state.builder.question.trim() || 'What should we do this weekend?';
-      updateLiveFeedbackMeters();
     } else if (pageName === 'saved') {
       renderSavedPolls();
     }
@@ -393,6 +370,8 @@
         }
       }
     }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function getBasePageUrl() {
@@ -434,71 +413,24 @@
   }
 
   /* ========================================================================
-     Live Feedback Meters (Question & Answers)
+     Live Feedback & Builder
      ======================================================================== */
 
-  function updateLiveFeedbackMeters() {
+  function updateLiveMeters() {
     const q = state.builder.question.trim();
     const len = q.length;
-
     el.questionCharCount.textContent = `${len} / 180`;
     el.questionCharCount.classList.toggle('warn', len >= 160);
-
-    let meterPct = 0;
-    let feedbackText = 'Start typing to activate live feedback';
-    let pillText = 'Draft';
-    let ready = false;
-
-    if (len === 0) {
-      meterPct = 0;
-    } else if (len < 8) {
-      meterPct = 32;
-      feedbackText = 'Add a little more context so friends know what to pick';
-      pillText = 'Too Short';
-    } else if (len <= 120) {
-      meterPct = Math.min(100, 45 + Math.round((len / 100) * 55));
-      feedbackText = q.endsWith('?') ? 'Great clear question ready for answers' : 'Looks clear and punchy — ready for answers';
-      pillText = 'Ready';
-      ready = true;
-    } else {
-      meterPct = 100;
-      feedbackText = 'Detailed question — keep it concise for mobile voters';
-      pillText = 'Ready';
-      ready = true;
-    }
-
-    el.questionMeterFill.style.width = `${meterPct}%`;
-    el.questionFeedback.textContent = feedbackText;
-    el.questionReadinessPill.textContent = pillText;
-    el.questionReadinessPill.classList.toggle('ready', ready);
-
-    el.stepBtnQuestion.classList.toggle('completed', ready);
-    el.stepQuestionStatus.textContent = ready ? `"${q.slice(0, 26)}${q.length > 26 ? '...' : ''}"` : 'Waiting for question';
-    el.stepConnectorFill.style.width = ready ? '100%' : `${meterPct}%`;
+    el.questionMeterFill.style.width = `${Math.min(100, Math.round((len / 90) * 100))}%`;
 
     const filledOpts = state.builder.options.map((o) => o.trim()).filter(Boolean);
     const uniqueOpts = new Set(filledOpts.map((o) => o.toLowerCase()));
-    const hasDuplicates = uniqueOpts.size < filledOpts.length;
-    const answersReady = filledOpts.length >= 2 && !hasDuplicates;
-
-    el.stepBtnAnswers.classList.toggle('completed', answersReady);
-    el.stepAnswersStatus.textContent = hasDuplicates
-      ? 'Duplicate answer detected'
-      : `${filledOpts.length} of ${state.builder.options.length} filled`;
-    el.stepConnectorFill2.style.width = answersReady ? '100%' : `${Math.min(75, filledOpts.length * 30)}%`;
-
-    if (hasDuplicates) {
-      el.answersFeedback.textContent = 'Two or more answers look identical — consider making each unique.';
-    } else if (filledOpts.length < 2) {
-      el.answersFeedback.textContent = 'Fill in at least 2 answer choices to generate your unique poll page.';
+    if (uniqueOpts.size < filledOpts.length) {
+      el.answersFeedback.textContent = 'Duplicate answer detected.';
     } else {
-      el.answersFeedback.textContent = `${filledOpts.length} distinct choices ready. Click preview options to test live animation.`;
+      el.answersFeedback.textContent = '';
     }
   }
-
-  /* ========================================================================
-     Builder Logic & Live Preview Sync
-     ======================================================================== */
 
   function getBuilderExpiryTimestamp() {
     if (state.builder.expiryMinutes === 'custom') {
@@ -512,13 +444,13 @@
   function renderBuilderOptionRows() {
     el.optionsList.innerHTML = '';
     const count = state.builder.options.length;
-    el.optionCountStatus.textContent = `${count} of 8 options`;
+    el.optionCountStatus.textContent = `${count} / 8`;
     el.addOptionBtn.disabled = count >= 8;
 
     state.builder.options.forEach((val, idx) => {
       const row = document.createElement('div');
       row.className = 'option-row';
-      row.style.animationDelay = `${idx * 35}ms`;
+      row.style.animationDelay = `${idx * 30}ms`;
 
       const badge = document.createElement('span');
       badge.className = 'option-badge stroke-btn';
@@ -528,14 +460,14 @@
       input.type = 'text';
       input.className = 'field-input option-input stroke-body';
       input.maxLength = 90;
-      input.placeholder = `Answer option ${idx + 1}`;
+      input.placeholder = `Answer ${idx + 1}`;
       input.value = val;
-      input.setAttribute('aria-label', `Answer option ${idx + 1}`);
+      input.setAttribute('aria-label', `Answer ${idx + 1}`);
 
       input.addEventListener('input', (e) => {
         state.builder.options[idx] = e.target.value;
         input.classList.remove('is-invalid');
-        updateLiveFeedbackMeters();
+        updateLiveMeters();
         syncLivePreview();
       });
 
@@ -548,7 +480,7 @@
       upBtn.type = 'button';
       upBtn.className = 'reorder-btn stroke-btn';
       upBtn.textContent = '^';
-      upBtn.title = 'Move option up';
+      upBtn.title = 'Move up';
       upBtn.disabled = idx === 0;
       upBtn.addEventListener('click', () => {
         if (idx === 0) return;
@@ -556,7 +488,7 @@
         state.builder.options[idx - 1] = state.builder.options[idx];
         state.builder.options[idx] = temp;
         renderBuilderOptionRows();
-        updateLiveFeedbackMeters();
+        updateLiveMeters();
         syncLivePreview();
       });
 
@@ -564,7 +496,7 @@
       removeBtn.type = 'button';
       removeBtn.className = 'remove-option-btn stroke-btn';
       removeBtn.textContent = 'X';
-      removeBtn.title = 'Remove option';
+      removeBtn.title = 'Remove';
       removeBtn.disabled = count <= 2;
       removeBtn.addEventListener('click', () => {
         if (state.builder.options.length <= 2) return;
@@ -572,7 +504,7 @@
         state.previewVotes.splice(idx, 1);
         state.previewPicks = [];
         renderBuilderOptionRows();
-        updateLiveFeedbackMeters();
+        updateLiveMeters();
         syncLivePreview();
       });
 
@@ -589,10 +521,10 @@
     const expTs = getBuilderExpiryTimestamp();
     const diff = expTs - Date.now();
     if (diff <= 0) {
-      el.expiryLiveSummary.textContent = 'Choose a date and time in the future';
-      el.previewCountdown.textContent = 'Invalid expiry';
+      el.expiryLiveSummary.textContent = 'Pick a future date';
+      el.previewCountdown.textContent = 'Invalid';
     } else {
-      el.expiryLiveSummary.textContent = `Closes on ${formatLocalDateTime(expTs)}`;
+      el.expiryLiveSummary.textContent = `Closes ${formatLocalDateTime(expTs)}`;
       el.previewCountdown.textContent = formatDurationShort(diff);
     }
   }
@@ -600,8 +532,7 @@
   function syncLivePreview() {
     const qText = state.builder.question.trim() || 'What should we do this weekend?';
     el.previewQuestion.textContent = qText;
-    el.answersQuestionRecap.textContent = qText;
-    el.previewMeta.textContent = `${state.builder.multiChoice ? 'Multiple choice' : 'Single choice'} · Interactive preview`;
+    el.previewMeta.textContent = state.builder.multiChoice ? 'Multiple choice' : 'Single choice';
 
     if (state.builder.icon) {
       el.previewIconSlot.classList.remove('hidden-slot');
@@ -613,7 +544,7 @@
     updateExpirySummaryUI();
 
     const displayOptions = state.builder.options.map((opt, idx) =>
-      opt.trim() || `Answer option ${idx + 1}`
+      opt.trim() || `Answer ${idx + 1}`
     );
 
     if (state.previewVotes.length !== displayOptions.length) {
@@ -694,11 +625,10 @@
 
     const question = state.builder.question.trim();
     if (!question) {
-      navigateToPage('question');
       el.questionInput.classList.add('is-invalid');
-      el.questionFeedback.textContent = 'Please enter a poll question first.';
+      el.questionFeedback.textContent = 'Enter a question first.';
       el.questionInput.focus();
-      showToast('Enter a poll question on the Question page first');
+      showToast('Enter a question');
       return;
     }
 
@@ -708,13 +638,13 @@
       inputs.forEach((inp) => {
         if (!inp.value.trim()) inp.classList.add('is-invalid');
       });
-      showToast('Provide at least 2 answer options');
+      showToast('Add at least 2 answers');
       return;
     }
 
     const expiresAt = getBuilderExpiryTimestamp();
     if (expiresAt <= Date.now() + 10000) {
-      showToast('Choose an expiration time in the future');
+      showToast('Pick a future expiration time');
       return;
     }
 
@@ -755,18 +685,16 @@
 
     savePollRecord(poll);
 
-    el.stepPillShare.classList.add('completed');
-    el.stepShareStatus.textContent = 'Ready to share';
     el.generatedUrlInput.value = shareUrl;
     el.shareResultCard.classList.remove('hidden');
     triggerJuicyPop(el.shareResultCard);
     el.shareResultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-    showToast('Unique poll page generated');
+    showToast('Poll link generated');
   }
 
   /* ========================================================================
-     Active Unique Poll Page Rendering & Voting
+     Active Poll Page & Voting
      ======================================================================== */
 
   function openPollObject(poll, updateHistoryUrl = true) {
@@ -855,19 +783,17 @@
     }
 
     el.activePollQuestion.textContent = poll.q;
-    el.activePollSubtitle.textContent = `${poll.multi ? 'Select one or more options' : 'Select one option'} · ${
-      expired ? 'Voting has closed' : hasVoted ? 'Your vote is recorded' : 'Vote before the timer ends'
+    el.activePollSubtitle.textContent = `${poll.multi ? 'Multiple choice' : 'Single choice'} · ${
+      expired ? 'Voting closed' : hasVoted ? 'Vote recorded' : 'Choose an option'
     }`;
-    el.activeExpiryDateText.textContent = `${expired ? 'Closed on' : 'Expires on'} ${formatLocalDateTime(
-      poll.expiresAt
-    )}`;
+    el.activeExpiryDateText.textContent = `${expired ? 'Closed' : 'Expires'} ${formatLocalDateTime(poll.expiresAt)}`;
 
     updateActiveCountdown();
     renderActivePollOptionsOnly();
 
     el.castVoteBtn.classList.toggle('hidden', expired || hasVoted);
     el.toggleResultsViewBtn.classList.toggle('hidden', expired || hasVoted);
-    el.toggleResultsViewBtn.textContent = state.activeShowResults ? 'Hide Results' : 'View Live Results';
+    el.toggleResultsViewBtn.textContent = state.activeShowResults ? 'Hide Results' : 'View Results';
   }
 
   function renderActivePollOptionsOnly() {
@@ -881,7 +807,7 @@
     const totalVotes = tallies.reduce((sum, n) => sum + n, 0);
     const maxVotes = Math.max(...tallies, 0);
 
-    el.activeTotalVotes.textContent = `${totalVotes} Total ${totalVotes === 1 ? 'Vote' : 'Votes'}`;
+    el.activeTotalVotes.textContent = `${totalVotes} ${totalVotes === 1 ? 'Vote' : 'Votes'}`;
     el.activeOptionsContainer.innerHTML = '';
 
     poll.opts.forEach((optText, idx) => {
@@ -950,18 +876,18 @@
     if (!poll) return;
 
     if (Date.now() >= poll.expiresAt) {
-      showToast('This poll has expired');
+      showToast('Poll expired');
       renderActivePoll();
       return;
     }
 
     if (state.activeSelectedIndexes.length === 0) {
-      showToast('Pick an answer option before voting');
+      showToast('Select an option first');
       return;
     }
 
     if (getUserPicks(poll.id)) {
-      showToast('You already voted on this poll');
+      showToast('Already voted');
       return;
     }
 
@@ -982,7 +908,7 @@
           poll.votes = data.poll.votes;
         }
       } catch {
-        // Fallback locally
+        // fallback locally
       }
     } else {
       setLocalVoteTallies(poll.id, tallies);
@@ -993,11 +919,11 @@
     state.activeShowResults = true;
     renderActivePoll();
     triggerJuicyPop(el.activeOptionsContainer);
-    showToast('Vote recorded');
+    showToast('Vote submitted');
   }
 
   /* ========================================================================
-     Saved Polls View
+     Saved Polls
      ======================================================================== */
 
   function renderSavedPolls() {
@@ -1009,12 +935,8 @@
       empty.className = 'empty-saved-state';
       const title = document.createElement('p');
       title.className = 'card-title stroke-heading';
-      title.textContent = 'No Polls Generated Yet';
-      const sub = document.createElement('p');
-      sub.className = 'card-desc stroke-body';
-      sub.textContent = 'Create your first poll on the Question and Answers pages to see it here.';
+      title.textContent = 'No Polls Yet';
       empty.appendChild(title);
-      empty.appendChild(sub);
       el.savedPollsGrid.appendChild(empty);
       return;
     }
@@ -1053,17 +975,13 @@
       openBtn.type = 'button';
       openBtn.className = 'btn btn-primary-gradient stroke-btn';
       openBtn.textContent = 'Open';
-      openBtn.addEventListener('click', () => {
-        openPollObject(poll, true);
-      });
+      openBtn.addEventListener('click', () => openPollObject(poll, true));
 
       const copyBtn = document.createElement('button');
       copyBtn.type = 'button';
       copyBtn.className = 'btn btn-gold stroke-btn';
-      copyBtn.textContent = 'Copy Link';
-      copyBtn.addEventListener('click', () => {
-        copyTextToClipboard(poll.shareUrl || buildShareUrl(poll));
-      });
+      copyBtn.textContent = 'Copy';
+      copyBtn.addEventListener('click', () => copyTextToClipboard(poll.shareUrl || buildShareUrl(poll)));
 
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
@@ -1071,7 +989,7 @@
       delBtn.textContent = 'Delete';
       delBtn.addEventListener('click', () => {
         removeSavedPoll(poll.id);
-        showToast('Poll removed');
+        showToast('Poll deleted');
       });
 
       actions.appendChild(openBtn);
@@ -1087,13 +1005,13 @@
   }
 
   /* ========================================================================
-     Clipboard & Routing
+     Clipboard & URL Routing
      ======================================================================== */
 
   async function copyTextToClipboard(text) {
     try {
       await navigator.clipboard.writeText(text);
-      showToast('Poll link copied to clipboard');
+      showToast('Link copied');
     } catch {
       const temp = document.createElement('textarea');
       temp.value = text;
@@ -1101,7 +1019,7 @@
       temp.select();
       document.execCommand('copy');
       document.body.removeChild(temp);
-      showToast('Poll link copied');
+      showToast('Link copied');
     }
   }
 
@@ -1137,7 +1055,7 @@
     }
 
     const hashPage = window.location.hash.replace('#', '');
-    if (['question', 'answers', 'how-to-use', 'saved'].includes(hashPage)) {
+    if (['create', 'how-to-use', 'qa', 'privacy', 'saved'].includes(hashPage)) {
       navigateToPage(hashPage, false);
       return true;
     }
@@ -1146,59 +1064,49 @@
   }
 
   /* ========================================================================
-     Event Listeners & Initialization
+     Events & Init
      ======================================================================== */
 
   function bindEvents() {
     el.brandHomeLink.addEventListener('click', (e) => {
       e.preventDefault();
-      navigateToPage('question');
+      navigateToPage('create');
     });
 
-    el.navQuestionBtn.addEventListener('click', () => navigateToPage('question'));
-    el.navAnswersBtn.addEventListener('click', () => navigateToPage('answers'));
+    el.navCreateBtn.addEventListener('click', () => navigateToPage('create'));
     el.navHowToBtn.addEventListener('click', () => navigateToPage('how-to-use'));
+    el.navQaBtn.addEventListener('click', () => navigateToPage('qa'));
+    el.navPrivacyBtn.addEventListener('click', () => navigateToPage('privacy'));
     el.navSavedBtn.addEventListener('click', () => navigateToPage('saved'));
+    el.savedBackBtn.addEventListener('click', () => navigateToPage('create'));
+    el.backToBuilderBtn.addEventListener('click', () => navigateToPage('create'));
 
-    el.stepBtnQuestion.addEventListener('click', () => navigateToPage('question'));
-    el.stepBtnAnswers.addEventListener('click', () => navigateToPage('answers'));
-    el.editQuestionBackBtn.addEventListener('click', () => navigateToPage('question'));
-    el.backToQuestionBtn.addEventListener('click', () => navigateToPage('question'));
-    el.savedBackBtn.addEventListener('click', () => navigateToPage('question'));
-    el.backToBuilderBtn.addEventListener('click', () => navigateToPage('question'));
+    el.jumpCreateBtns.forEach((btn) => {
+      btn.addEventListener('click', () => navigateToPage('create'));
+    });
 
-    el.toAnswersPageBtn.addEventListener('click', () => {
-      if (!state.builder.question.trim()) {
-        el.questionInput.classList.add('is-invalid');
-        el.questionFeedback.textContent = 'Enter a question first so your friends know what they are voting on.';
-        el.questionInput.focus();
-        showToast('Write your poll question first');
-        return;
-      }
-      navigateToPage('answers');
-      const firstInput = el.optionsList.querySelector('.option-input');
-      if (firstInput && !firstInput.value.trim()) firstInput.focus();
+    el.footerNavLinks.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const page = btn.dataset.page || 'create';
+        navigateToPage(page);
+      });
+    });
+
+    el.faqTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.faq-item');
+        if (!item) return;
+        const isOpen = item.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', String(isOpen));
+      });
     });
 
     el.questionInput.addEventListener('input', (e) => {
       state.builder.question = e.target.value;
       el.questionInput.classList.remove('is-invalid');
-      updateLiveFeedbackMeters();
+      el.questionFeedback.textContent = '';
+      updateLiveMeters();
       syncLivePreview();
-    });
-
-    el.starterChips.forEach((chip) => {
-      chip.addEventListener('click', () => {
-        const promptText = chip.dataset.question || '';
-        state.builder.question = promptText;
-        el.questionInput.value = promptText;
-        el.questionInput.classList.remove('is-invalid');
-        triggerJuicyPop(el.questionInput);
-        triggerJuicyPop(el.livePreviewCard);
-        updateLiveFeedbackMeters();
-        syncLivePreview();
-        showToast('Starter question applied');
-      });
     });
 
     el.addOptionBtn.addEventListener('click', () => {
@@ -1206,7 +1114,7 @@
       state.builder.options.push('');
       state.previewVotes.push(1);
       renderBuilderOptionRows();
-      updateLiveFeedbackMeters();
+      updateLiveMeters();
       syncLivePreview();
       const inputs = el.optionsList.querySelectorAll('.option-input');
       if (inputs.length) inputs[inputs.length - 1].focus();
@@ -1289,32 +1197,16 @@
       if (navigator.share) {
         try {
           await navigator.share({
-            title: 'Vote on my QuickPoll',
-            text: state.builder.question.trim() || 'Vote on this poll before it expires',
+            title: 'Vote on QuickPoll',
+            text: state.builder.question.trim() || 'Vote on this poll',
             url,
           });
           return;
         } catch {
-          // fallback to copy
+          // fallback
         }
       }
       copyTextToClipboard(url);
-    });
-
-    el.howtoJumpBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const target = btn.dataset.jump || 'question';
-        navigateToPage(target);
-      });
-    });
-
-    el.faqTriggers.forEach((trigger) => {
-      trigger.addEventListener('click', () => {
-        const item = trigger.closest('.faq-item');
-        if (!item) return;
-        const isOpen = item.classList.toggle('open');
-        trigger.setAttribute('aria-expanded', String(isOpen));
-      });
     });
 
     el.castVoteBtn.addEventListener('click', handleCastVote);
@@ -1332,12 +1224,12 @@
 
     window.addEventListener('popstate', async () => {
       const loaded = await loadRouteFromUrl();
-      if (!loaded) navigateToPage('question', false);
+      if (!loaded) navigateToPage('create', false);
     });
 
     window.addEventListener('hashchange', async () => {
       const loaded = await loadRouteFromUrl();
-      if (!loaded) navigateToPage('question', false);
+      if (!loaded) navigateToPage('create', false);
     });
   }
 
@@ -1345,14 +1237,14 @@
     el.customExpiryInput.min = toDatetimeLocalValue(Date.now() + 60 * 1000);
     updateSavedCountBadge();
     renderBuilderOptionRows();
-    updateLiveFeedbackMeters();
+    updateLiveMeters();
     syncLivePreview();
     bindEvents();
 
     await detectBackend();
     const routed = await loadRouteFromUrl();
     if (!routed) {
-      navigateToPage('question', false);
+      navigateToPage('create', false);
     }
   }
 
