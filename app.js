@@ -1334,6 +1334,11 @@
       const loaded = await loadRouteFromUrl();
       if (!loaded) navigateToPage('question', false);
     });
+
+    window.addEventListener('hashchange', async () => {
+      const loaded = await loadRouteFromUrl();
+      if (!loaded) navigateToPage('question', false);
+    });
   }
 
   async function init() {
