@@ -10,9 +10,101 @@
   const STORAGE_VOTES_KEY = 'quickpoll_votes_v1';
   const STORAGE_USER_PICKS_KEY = 'quickpoll_user_picks_v1';
 
+  const POLL_TEMPLATES = [
+    {
+      id: 'tpl_weekend',
+      category: 'friends',
+      categoryLabel: 'Friends',
+      question: 'What should we do this weekend?',
+      options: ['Movies', 'Bowling', 'Arcade Night', 'Dinner Out'],
+      multi: false,
+      expiryMinutes: '1440',
+      theme: 'sovereign',
+      icon: 'assets/icon-vote.png',
+    },
+    {
+      id: 'tpl_dinner',
+      category: 'food',
+      categoryLabel: 'Food',
+      question: 'Where are we ordering dinner from?',
+      options: ['Pizza', 'Burgers', 'Sushi', 'Tacos', 'Thai'],
+      multi: false,
+      expiryMinutes: '60',
+      theme: 'crimson-gold',
+      icon: 'assets/icon-poll.png',
+    },
+    {
+      id: 'tpl_movie',
+      category: 'friends',
+      categoryLabel: 'Friends',
+      question: 'Which genre for movie night?',
+      options: ['Action', 'Comedy', 'Sci Fi', 'Thriller'],
+      multi: true,
+      expiryMinutes: '360',
+      theme: 'cobalt-purple',
+      icon: 'assets/icon-vote.png',
+    },
+    {
+      id: 'tpl_gamenight',
+      category: 'gaming',
+      categoryLabel: 'Gaming',
+      question: 'What game are we playing tonight?',
+      options: ['Valorant', 'Minecraft', 'Rocket League', 'Mario Kart'],
+      multi: true,
+      expiryMinutes: '360',
+      theme: 'cobalt-purple',
+      icon: 'assets/icon-poll.png',
+    },
+    {
+      id: 'tpl_coffee',
+      category: 'food',
+      categoryLabel: 'Food',
+      question: 'Coffee run pick?',
+      options: ['Iced Latte', 'Cappuccino', 'Matcha', 'Cold Brew'],
+      multi: false,
+      expiryMinutes: '15',
+      theme: 'sovereign',
+      icon: 'assets/icon-timer.png',
+    },
+    {
+      id: 'tpl_trip',
+      category: 'friends',
+      categoryLabel: 'Friends',
+      question: 'Best dates for the group trip?',
+      options: ['First Weekend', 'Second Weekend', 'Third Weekend', 'Next Month'],
+      multi: true,
+      expiryMinutes: '4320',
+      theme: 'sovereign',
+      icon: 'assets/icon-share.png',
+    },
+    {
+      id: 'tpl_meeting',
+      category: 'work',
+      categoryLabel: 'Work',
+      question: 'Best time for our weekly sync?',
+      options: ['10:00 AM', '1:00 PM', '3:30 PM', '5:00 PM'],
+      multi: true,
+      expiryMinutes: '1440',
+      theme: 'cobalt-purple',
+      icon: 'assets/icon-timer.png',
+    },
+    {
+      id: 'tpl_yesno',
+      category: 'work',
+      categoryLabel: 'Work',
+      question: 'Should we lock this plan in?',
+      options: ['Yes', 'No', 'Need Changes'],
+      multi: false,
+      expiryMinutes: '1440',
+      theme: 'crimson-gold',
+      icon: 'assets/icon-vote.png',
+    },
+  ];
+
   const state = {
     serverMode: false,
     currentPage: 'create',
+    activeTemplateFilter: 'all',
     builder: {
       question: '',
       options: ['', ''],
@@ -39,12 +131,14 @@
     brandHomeLink: document.getElementById('brandHomeLink'),
 
     navCreateBtn: document.getElementById('navCreateBtn'),
+    navTemplatesBtn: document.getElementById('navTemplatesBtn'),
     navHowToBtn: document.getElementById('navHowToBtn'),
     navQaBtn: document.getElementById('navQaBtn'),
     navPrivacyBtn: document.getElementById('navPrivacyBtn'),
     navSavedBtn: document.getElementById('navSavedBtn'),
     savedCountBadge: document.getElementById('savedCountBadge'),
     mobileSavedCountBadge: document.getElementById('mobileSavedCountBadge'),
+    quickTemplatesLink: document.getElementById('quickTemplatesLink'),
 
     hamburgerBtn: document.getElementById('hamburgerBtn'),
     mobileNavBackdrop: document.getElementById('mobileNavBackdrop'),
@@ -55,11 +149,15 @@
     toastBanner: document.getElementById('toastBanner'),
 
     createView: document.getElementById('createView'),
+    templatesView: document.getElementById('templatesView'),
     howToView: document.getElementById('howToView'),
     qaView: document.getElementById('qaView'),
     privacyView: document.getElementById('privacyView'),
     pollView: document.getElementById('pollView'),
     savedView: document.getElementById('savedView'),
+
+    templateFilterBar: document.getElementById('templateFilterBar'),
+    templatesGrid: document.getElementById('templatesGrid'),
 
     pollForm: document.getElementById('pollForm'),
     overallReadinessBadge: document.getElementById('overallReadinessBadge'),
@@ -100,8 +198,11 @@
     shareResultCard: document.getElementById('shareResultCard'),
     generatedUrlInput: document.getElementById('generatedUrlInput'),
     copyLinkBtn: document.getElementById('copyLinkBtn'),
+    shareQrCanvas: document.getElementById('shareQrCanvas'),
+    downloadQrBtn: document.getElementById('downloadQrBtn'),
     openPollPageBtn: document.getElementById('openPollPageBtn'),
     nativeShareBtn: document.getElementById('nativeShareBtn'),
+    builderSocialShareRow: document.getElementById('builderSocialShareRow'),
 
     jumpCreateBtns: Array.from(document.querySelectorAll('.jump-create-btn')),
     footerNavLinks: Array.from(document.querySelectorAll('.footer-nav-link')),
@@ -120,6 +221,11 @@
     activeTotalVotes: document.getElementById('activeTotalVotes'),
     activeExpiryDateText: document.getElementById('activeExpiryDateText'),
     activeCopyLinkBtn: document.getElementById('activeCopyLinkBtn'),
+    activeQrToggleBtn: document.getElementById('activeQrToggleBtn'),
+    activeQrWrap: document.getElementById('activeQrWrap'),
+    activeQrCanvas: document.getElementById('activeQrCanvas'),
+    activeDownloadQrBtn: document.getElementById('activeDownloadQrBtn'),
+    activeSocialShareRow: document.getElementById('activeSocialShareRow'),
     backToBuilderBtn: document.getElementById('backToBuilderBtn'),
 
     savedPollsGrid: document.getElementById('savedPollsGrid'),
@@ -386,6 +492,7 @@
     closeDrawer();
 
     el.createView.classList.toggle('active', pageName === 'create');
+    el.templatesView.classList.toggle('active', pageName === 'templates');
     el.howToView.classList.toggle('active', pageName === 'how-to-use');
     el.qaView.classList.toggle('active', pageName === 'qa');
     el.privacyView.classList.toggle('active', pageName === 'privacy');
@@ -393,6 +500,7 @@
     el.savedView.classList.toggle('active', pageName === 'saved');
 
     el.navCreateBtn.classList.toggle('active', pageName === 'create');
+    el.navTemplatesBtn.classList.toggle('active', pageName === 'templates');
     el.navHowToBtn.classList.toggle('active', pageName === 'how-to-use');
     el.navQaBtn.classList.toggle('active', pageName === 'qa');
     el.navPrivacyBtn.classList.toggle('active', pageName === 'privacy');
@@ -404,6 +512,8 @@
 
     if (pageName === 'create') {
       applyTheme(state.builder.theme);
+    } else if (pageName === 'templates') {
+      renderTemplatesGrid();
     } else if (pageName === 'saved') {
       renderSavedPolls();
     }
@@ -766,10 +876,11 @@
 
     el.generatedUrlInput.value = shareUrl;
     el.shareResultCard.classList.remove('hidden');
+    renderQrToCanvas(el.shareQrCanvas, shareUrl);
     triggerJuicyPop(el.shareResultCard);
     el.shareResultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-    showToast('Poll link generated');
+    showToast('Poll link & QR ready');
   }
 
   /* ========================================================================
@@ -783,6 +894,7 @@
     state.activeShowResults = Boolean(existingPicks) || Date.now() >= poll.expiresAt;
 
     applyTheme(poll.theme || 'sovereign');
+    if (el.activeQrWrap) el.activeQrWrap.classList.add('hidden');
     navigateToPage('poll', false);
 
     if (updateHistoryUrl) {
@@ -1002,6 +1114,238 @@
   }
 
   /* ========================================================================
+     QR Code Generator, Quick Social Share & Poll Templates
+     ======================================================================== */
+
+  function renderQrToCanvas(canvas, text) {
+    if (!canvas || !text || typeof window.qrcode !== 'function') return;
+    let qr = null;
+    for (const ec of ['M', 'L']) {
+      try {
+        const candidate = window.qrcode(0, ec);
+        candidate.addData(text);
+        candidate.make();
+        qr = candidate;
+        break;
+      } catch {
+        // Retry with lower error correction if payload is long
+      }
+    }
+    if (!qr) return;
+
+    const moduleCount = qr.getModuleCount();
+    const size = 240;
+    const margin = 2;
+    const totalModules = moduleCount + margin * 2;
+    const cell = size / totalModules;
+
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#07070c';
+
+    for (let row = 0; row < moduleCount; row++) {
+      for (let col = 0; col < moduleCount; col++) {
+        if (qr.isDark(row, col)) {
+          const x = Math.floor((col + margin) * cell);
+          const y = Math.floor((row + margin) * cell);
+          const w = Math.ceil((col + margin + 1) * cell) - x;
+          const h = Math.ceil((row + margin + 1) * cell) - y;
+          ctx.fillRect(x, y, w, h);
+        }
+      }
+    }
+  }
+
+  function downloadQrCanvas(canvas, filename) {
+    if (!canvas) return;
+    try {
+      const link = document.createElement('a');
+      link.download = filename || 'quickpoll-qr.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('QR code saved');
+    } catch {
+      showToast('Unable to export QR');
+    }
+  }
+
+  function handleSocialShare(network, url, question) {
+    if (!url) return;
+    const safeQuestion = (question || 'Vote on this poll').trim();
+    const shareText = `Vote now: ${safeQuestion}`;
+    let target = '';
+
+    switch (network) {
+      case 'whatsapp':
+        target = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText}\n${url}`)}`;
+        break;
+      case 'x':
+        target = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
+        break;
+      case 'facebook':
+        target = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        break;
+      case 'telegram':
+        target = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+        break;
+      case 'reddit':
+        target = `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(safeQuestion)}`;
+        break;
+      case 'discord':
+        copyTextToClipboard(`**${safeQuestion}**\nVote here: ${url}`);
+        showToast('Copied for Discord');
+        return;
+      default:
+        return;
+    }
+
+    window.open(target, '_blank', 'noopener,noreferrer');
+  }
+
+  function renderTemplatesGrid() {
+    if (!el.templatesGrid) return;
+    el.templatesGrid.innerHTML = '';
+
+    const items = POLL_TEMPLATES.filter(
+      (tpl) => state.activeTemplateFilter === 'all' || tpl.category === state.activeTemplateFilter
+    );
+
+    items.forEach((tpl) => {
+      const card = document.createElement('article');
+      card.className = 'glass-card template-card';
+
+      const head = document.createElement('div');
+      head.className = 'template-card-head';
+
+      const catBadge = document.createElement('span');
+      catBadge.className = 'template-cat-badge stroke-subtle';
+      catBadge.textContent = tpl.categoryLabel;
+
+      const iconWrap = document.createElement('div');
+      iconWrap.className = 'icon-slot icon-slot-md';
+      const iconImg = document.createElement('img');
+      iconImg.className = 'slot-img';
+      iconImg.src = resolveIconSrc(tpl.icon);
+      iconImg.alt = tpl.categoryLabel;
+      iconWrap.appendChild(iconImg);
+
+      head.appendChild(catBadge);
+      head.appendChild(iconWrap);
+
+      const q = document.createElement('h2');
+      q.className = 'template-question stroke-heading';
+      q.textContent = tpl.question;
+
+      const optsWrap = document.createElement('div');
+      optsWrap.className = 'template-options-preview';
+      tpl.options.forEach((opt) => {
+        const chip = document.createElement('span');
+        chip.className = 'template-option-chip stroke-subtle';
+        chip.textContent = opt;
+        optsWrap.appendChild(chip);
+      });
+
+      const footer = document.createElement('div');
+      footer.className = 'template-card-footer';
+
+      const meta = document.createElement('span');
+      meta.className = 'template-meta-text stroke-subtle';
+      const mins = Number(tpl.expiryMinutes);
+      const durLabel = mins >= 1440 ? `${mins / 1440}d` : mins >= 60 ? `${mins / 60}h` : `${mins}m`;
+      meta.textContent = `${tpl.multi ? 'Multi pick' : 'Single pick'} · ${durLabel}`;
+
+      const useBtn = document.createElement('button');
+      useBtn.type = 'button';
+      useBtn.className = 'btn btn-gold btn-sm stroke-btn';
+      useBtn.textContent = 'Use Template';
+      useBtn.addEventListener('click', () => applyTemplate(tpl));
+
+      footer.appendChild(meta);
+      footer.appendChild(useBtn);
+
+      card.appendChild(head);
+      card.appendChild(q);
+      card.appendChild(optsWrap);
+      card.appendChild(footer);
+      el.templatesGrid.appendChild(card);
+    });
+
+    initGlassTiltAndShine();
+  }
+
+  function applyTemplate(tpl) {
+    state.builder.question = tpl.question;
+    state.builder.options = [...tpl.options];
+    state.builder.multiChoice = Boolean(tpl.multi);
+    state.builder.expiryMinutes = String(tpl.expiryMinutes);
+    state.builder.theme = tpl.theme || 'sovereign';
+    state.builder.icon = tpl.icon || 'assets/icon-vote.png';
+
+    state.previewVotes = tpl.options.map(() => 0);
+    state.previewPicks = [];
+
+    el.questionInput.value = tpl.question;
+    el.multiChoiceToggle.checked = state.builder.multiChoice;
+
+    el.presetPills.forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.minutes === state.builder.expiryMinutes);
+    });
+    el.customDateWrap.classList.add('hidden');
+
+    el.swatchBtns.forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.theme === state.builder.theme);
+    });
+    el.iconPickBtns.forEach((btn) => {
+      btn.classList.toggle('active', (btn.dataset.icon || '') === state.builder.icon);
+    });
+
+    applyTheme(state.builder.theme);
+    renderBuilderOptionRows();
+    updateExpirySummaryUI();
+    updateLiveStatusUI();
+    syncLivePreview();
+
+    navigateToPage('create');
+    triggerJuicyPop(el.pollForm);
+    showToast('Template loaded');
+  }
+
+  function initGlassTiltAndShine() {
+    const finePointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!finePointer || reduceMotion) return;
+
+    document.querySelectorAll('.glass-card').forEach((card) => {
+      if (card.dataset.tiltBound === '1') return;
+      card.dataset.tiltBound = '1';
+
+      card.addEventListener('pointermove', (e) => {
+        const rect = card.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
+        const rx = (0.5 - py) * 3.2;
+        const ry = (px - 0.5) * 3.2;
+
+        card.style.setProperty('--mx', `${(px * 100).toFixed(1)}%`);
+        card.style.setProperty('--my', `${(py * 100).toFixed(1)}%`);
+        card.style.setProperty('--rx', `${rx.toFixed(2)}deg`);
+        card.style.setProperty('--ry', `${ry.toFixed(2)}deg`);
+        card.style.setProperty('--shine-opacity', '1');
+      });
+
+      card.addEventListener('pointerleave', () => {
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+        card.style.setProperty('--shine-opacity', '0');
+      });
+    });
+  }
+
+  /* ========================================================================
      Saved Polls
      ======================================================================== */
 
@@ -1134,7 +1478,7 @@
     }
 
     const hashPage = window.location.hash.replace('#', '');
-    if (['create', 'how-to-use', 'qa', 'privacy', 'saved'].includes(hashPage)) {
+    if (['create', 'templates', 'how-to-use', 'qa', 'privacy', 'saved'].includes(hashPage)) {
       navigateToPage(hashPage, false);
       return true;
     }
@@ -1153,12 +1497,25 @@
     });
 
     el.navCreateBtn.addEventListener('click', () => navigateToPage('create'));
+    el.navTemplatesBtn.addEventListener('click', () => navigateToPage('templates'));
+    el.quickTemplatesLink.addEventListener('click', () => navigateToPage('templates'));
     el.navHowToBtn.addEventListener('click', () => navigateToPage('how-to-use'));
     el.navQaBtn.addEventListener('click', () => navigateToPage('qa'));
     el.navPrivacyBtn.addEventListener('click', () => navigateToPage('privacy'));
     el.navSavedBtn.addEventListener('click', () => navigateToPage('saved'));
     el.savedBackBtn.addEventListener('click', () => navigateToPage('create'));
     el.backToBuilderBtn.addEventListener('click', () => navigateToPage('create'));
+
+    if (el.templateFilterBar) {
+      el.templateFilterBar.querySelectorAll('.preset-pill').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          el.templateFilterBar.querySelectorAll('.preset-pill').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.activeTemplateFilter = btn.dataset.category || 'all';
+          renderTemplatesGrid();
+        });
+      });
+    }
 
     el.hamburgerBtn.addEventListener('click', toggleDrawer);
     el.closeDrawerBtn.addEventListener('click', closeDrawer);
@@ -1277,6 +1634,18 @@
       if (el.generatedUrlInput.value) copyTextToClipboard(el.generatedUrlInput.value);
     });
 
+    el.downloadQrBtn.addEventListener('click', () => {
+      downloadQrCanvas(el.shareQrCanvas, `quickpoll-${state.lastGeneratedPollId || 'qr'}.png`);
+    });
+
+    if (el.builderSocialShareRow) {
+      el.builderSocialShareRow.querySelectorAll('.social-icon-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          handleSocialShare(btn.dataset.social, el.generatedUrlInput.value, state.builder.question);
+        });
+      });
+    }
+
     el.openPollPageBtn.addEventListener('click', () => {
       const saved = getSavedPolls().find((p) => p.id === state.lastGeneratedPollId);
       if (saved) openPollObject(saved, true);
@@ -1313,6 +1682,31 @@
       copyTextToClipboard(url);
     });
 
+    el.activeQrToggleBtn.addEventListener('click', () => {
+      if (!state.activePoll || !el.activeQrWrap) return;
+      const isHidden = el.activeQrWrap.classList.toggle('hidden');
+      if (!isHidden) {
+        const shareUrl = state.activePoll.shareUrl || window.location.href;
+        renderQrToCanvas(el.activeQrCanvas, shareUrl);
+        triggerJuicyPop(el.activeQrWrap);
+      }
+    });
+
+    el.activeDownloadQrBtn.addEventListener('click', () => {
+      if (!state.activePoll) return;
+      downloadQrCanvas(el.activeQrCanvas, `quickpoll-${state.activePoll.id || 'qr'}.png`);
+    });
+
+    if (el.activeSocialShareRow) {
+      el.activeSocialShareRow.querySelectorAll('.social-icon-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (!state.activePoll) return;
+          const shareUrl = state.activePoll.shareUrl || window.location.href;
+          handleSocialShare(btn.dataset.social, shareUrl, state.activePoll.q);
+        });
+      });
+    }
+
     window.addEventListener('popstate', async () => {
       const loaded = await loadRouteFromUrl();
       if (!loaded) navigateToPage('create', false);
@@ -1335,9 +1729,11 @@
     el.customExpiryInput.min = toDatetimeLocalValue(Date.now() + 60 * 1000);
     updateSavedCountBadge();
     renderBuilderOptionRows();
+    renderTemplatesGrid();
     updateLiveStatusUI();
     syncLivePreview();
     bindEvents();
+    initGlassTiltAndShine();
 
     await detectBackend();
     const routed = await loadRouteFromUrl();

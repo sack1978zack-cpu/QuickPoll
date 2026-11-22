@@ -660,7 +660,7 @@ body {
   align-items: start;
 }
 
-/* 3D Smoked Glass Card */
+/* 3D Smoked Glass Card with Interactive Tilt & Specular Shine */
 .glass-card {
   position: relative;
   border-radius: var(--radius-xl);
@@ -672,6 +672,31 @@ body {
   box-shadow: var(--shadow-3d-glass);
   backdrop-filter: blur(26px) saturate(140%);
   -webkit-backdrop-filter: blur(26px) saturate(140%);
+  transform-style: preserve-3d;
+  transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color var(--transition-fast);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    400px circle at var(--mx, 50%) var(--my, 18%),
+    rgba(255, 229, 128, 0.14),
+    rgba(59, 130, 246, 0.05) 36%,
+    transparent 65%
+  );
+  opacity: var(--shine-opacity, 0);
+  transition: opacity 240ms ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass-card > * {
+  position: relative;
+  z-index: 2;
 }
 
 .glass-card::after {
@@ -681,6 +706,7 @@ body {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 229, 128, 0.55), transparent);
   pointer-events: none;
+  z-index: 2;
 }
 
 .card-header-row {
@@ -716,6 +742,19 @@ body {
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.page-wide {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.banner-text-grow {
+  flex: 1;
+  min-width: 180px;
 }
 
 .page-banner {
@@ -1353,7 +1392,10 @@ body {
 }
 
 .vote-option-btn.leading {
-  border-color: var(--gold);
+  border-color: var(--gold-light);
+  box-shadow:
+    0 4px 0 #000000,
+    0 0 18px rgba(245, 197, 66, 0.22);
 }
 
 .vote-option-btn:disabled {
@@ -1370,9 +1412,13 @@ body {
   pointer-events: none;
 }
 
+.vote-option-btn.leading .vote-bar-fill {
+  background: linear-gradient(90deg, rgba(245, 197, 66, 0.9), rgba(212, 160, 23, 0.72));
+}
+
 .vote-option-btn.selected .vote-bar-fill,
 .vote-option-btn.leading .vote-bar-fill {
-  opacity: 0.72;
+  opacity: 0.76;
 }
 
 .vote-option-inner {
@@ -1467,17 +1513,193 @@ body {
 .share-url-box {
   display: flex;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .url-input {
   font-size: 0.86rem;
 }
 
-.share-action-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.qr-share-layout {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  background: rgba(7, 7, 14, 0.86);
+  border: 1.5px solid rgba(245, 197, 66, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.qr-glass-frame {
+  flex-shrink: 0;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 2px solid var(--gold-light);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
+  line-height: 0;
+}
+
+.qr-glass-frame canvas {
+  width: 126px;
+  height: 126px;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.qr-share-side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   gap: 9px;
+}
+
+.qr-btn-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.social-share-section {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.social-share-label {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+
+.social-share-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.social-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  background:
+    var(--grad-glass-top),
+    rgba(12, 12, 22, 0.92);
+  box-shadow:
+    0 3px 0 #000000,
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  transition: transform var(--transition-juicy), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.social-icon-btn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+  background: transparent;
+}
+
+.social-icon-btn:hover {
+  transform: translateY(-3px) scale(1.04);
+  border-color: var(--gold-light);
+  box-shadow: 0 5px 0 #000000, 0 8px 18px rgba(245, 197, 66, 0.25);
+}
+
+.social-icon-btn[data-social="whatsapp"]:hover { border-color: #25d366; box-shadow: 0 5px 0 #000000, 0 8px 18px rgba(37, 211, 102, 0.3); }
+.social-icon-btn[data-social="x"]:hover { border-color: #ffffff; box-shadow: 0 5px 0 #000000, 0 8px 18px rgba(255, 255, 255, 0.24); }
+.social-icon-btn[data-social="facebook"]:hover { border-color: #1877f2; box-shadow: 0 5px 0 #000000, 0 8px 18px rgba(24, 119, 242, 0.34); }
+.social-icon-btn[data-social="telegram"]:hover { border-color: #26a5e4; box-shadow: 0 5px 0 #000000, 0 8px 18px rgba(38, 165, 228, 0.32); }
+.social-icon-btn[data-social="reddit"]:hover { border-color: #ff4500; box-shadow: 0 5px 0 #000000, 0 8px 18px rgba(255, 69, 0, 0.32); }
+.social-icon-btn[data-social="discord"]:hover { border-color: #5865f2; box-shadow: 0 5px 0 #000000, 0 8px 18px rgba(88, 101, 242, 0.34); }
+
+.social-icon-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #000000;
+}
+
+.active-share-drawer {
+  margin-top: 16px;
+  animation: pageSpringIn 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==========================================================================
+   Poll Templates Page
+   ========================================================================== */
+
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.template-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px;
+}
+
+.template-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.template-cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(8, 8, 16, 0.9);
+  border: 1.5px solid rgba(245, 197, 66, 0.35);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.template-question {
+  margin: 0;
+  font-size: 1.18rem;
+  line-height: 1.22;
+}
+
+.template-options-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.template-option-chip {
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  background: rgba(8, 8, 16, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.82rem;
+}
+
+.template-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.template-meta-text {
+  font-size: 0.82rem;
+  opacity: 0.88;
 }
 
 /* ==========================================================================
@@ -1843,5 +2065,24 @@ body {
 
   .share-url-box {
     flex-direction: column;
+  }
+
+  .qr-share-layout {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .qr-btn-stack {
+    justify-content: center;
+  }
+
+  .social-share-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-card {
+    transform: none !important;
   }
 }

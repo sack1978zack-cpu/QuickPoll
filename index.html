@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QuickPoll</title>
-  <meta name="description" content="Create polls with custom expiration timers and shareable links." />
+  <meta name="description" content="Create polls with custom expiration timers, QR codes, and shareable links." />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7516098019742511"
      crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="assets/logo.png?v=20261125" />
-  <link rel="stylesheet" href="styles.css?v=20261125" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261126" />
+  <link rel="stylesheet" href="styles.css?v=20261126" />
 </head>
 <body class="theme-sovereign">
   <!-- Clean Luxury Obsidian Ambient Backdrop -->
@@ -38,6 +38,9 @@
       <nav class="header-actions desktop-nav" aria-label="Primary navigation">
         <button type="button" id="navCreateBtn" class="btn btn-nav stroke-btn active" data-page="create">
           Create Poll
+        </button>
+        <button type="button" id="navTemplatesBtn" class="btn btn-nav stroke-btn" data-page="templates">
+          Templates
         </button>
         <button type="button" id="navHowToBtn" class="btn btn-nav stroke-btn" data-page="how-to-use">
           How to Use
@@ -89,6 +92,9 @@
       <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn active" data-page="create">
         Create Poll
       </button>
+      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="templates">
+        Templates
+      </button>
       <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="how-to-use">
         How to Use
       </button>
@@ -124,6 +130,7 @@
             <div class="header-title-block">
               <h1 id="createHeading" class="card-title stroke-heading">Create Poll</h1>
             </div>
+            <button type="button" id="quickTemplatesLink" class="btn btn-dark btn-sm stroke-btn">Templates</button>
             <span id="overallReadinessBadge" class="readiness-chip stroke-subtle">Draft</span>
           </div>
 
@@ -300,6 +307,7 @@
             </div>
           </div>
 
+          <!-- SHARE CARD WITH QR + REAL SOCIAL ICONS -->
           <div id="shareResultCard" class="glass-card share-card hidden">
             <div class="card-header-row compact">
               <!-- ICON SLOT: Share Result Icon -->
@@ -307,7 +315,7 @@
                 <img src="assets/icon-share.png" alt="Share Icon" class="slot-img" />
               </div>
               <div>
-                <h3 class="card-title stroke-heading">Link Ready</h3>
+                <h3 class="card-title stroke-heading">Share Poll</h3>
               </div>
             </div>
 
@@ -316,13 +324,42 @@
               <button type="button" id="copyLinkBtn" class="btn btn-gold stroke-btn">Copy</button>
             </div>
 
-            <div class="share-action-buttons">
-              <button type="button" id="openPollPageBtn" class="btn btn-glass-purple stroke-btn">
-                Open Poll
-              </button>
-              <button type="button" id="nativeShareBtn" class="btn btn-dark stroke-btn">
-                Share
-              </button>
+            <div class="qr-share-layout">
+              <div class="qr-glass-frame">
+                <canvas id="shareQrCanvas" width="160" height="160" aria-label="Poll QR Code"></canvas>
+              </div>
+              <div class="qr-share-side">
+                <p class="card-desc stroke-body">Scan QR or share directly</p>
+                <div class="qr-btn-stack">
+                  <button type="button" id="downloadQrBtn" class="btn btn-dark btn-sm stroke-btn">Save QR</button>
+                  <button type="button" id="openPollPageBtn" class="btn btn-glass-purple btn-sm stroke-btn">Open Poll</button>
+                  <button type="button" id="nativeShareBtn" class="btn btn-glass-blue btn-sm stroke-btn">More</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="social-share-section">
+              <span class="social-share-label stroke-subtle">Quick Social Share</span>
+              <div id="builderSocialShareRow" class="social-share-grid">
+                <button type="button" class="social-icon-btn" data-social="whatsapp" title="Share on WhatsApp" aria-label="Share on WhatsApp">
+                  <img src="assets/social-whatsapp.png" alt="WhatsApp" />
+                </button>
+                <button type="button" class="social-icon-btn" data-social="x" title="Share on X" aria-label="Share on X">
+                  <img src="assets/social-x.png" alt="X" />
+                </button>
+                <button type="button" class="social-icon-btn" data-social="facebook" title="Share on Facebook" aria-label="Share on Facebook">
+                  <img src="assets/social-facebook.png" alt="Facebook" />
+                </button>
+                <button type="button" class="social-icon-btn" data-social="telegram" title="Share on Telegram" aria-label="Share on Telegram">
+                  <img src="assets/social-telegram.png" alt="Telegram" />
+                </button>
+                <button type="button" class="social-icon-btn" data-social="reddit" title="Share on Reddit" aria-label="Share on Reddit">
+                  <img src="assets/social-reddit.png" alt="Reddit" />
+                </button>
+                <button type="button" class="social-icon-btn" data-social="discord" title="Copy for Discord" aria-label="Copy for Discord">
+                  <img src="assets/social-discord.png" alt="Discord" />
+                </button>
+              </div>
             </div>
           </div>
         </aside>
@@ -330,7 +367,30 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 2: HOW TO USE PAGE ==================== -->
+    <!-- ==================== VIEW 2: POLL TEMPLATES PAGE ==================== -->
+    <section id="templatesView" class="view-section" aria-labelledby="templatesHeading">
+      <div class="page-wide">
+        <div class="glass-card page-banner templates-banner">
+          <div class="icon-slot icon-slot-lg" data-icon-slot="templates-hero">
+            <img src="assets/icon-poll.png" alt="Templates" class="slot-img" />
+          </div>
+          <div class="banner-text-grow">
+            <h1 id="templatesHeading" class="page-title stroke-display">Poll Templates</h1>
+          </div>
+          <div id="templateFilterBar" class="preset-pills" role="group" aria-label="Template categories">
+            <button type="button" class="preset-pill stroke-btn active" data-category="all">All</button>
+            <button type="button" class="preset-pill stroke-btn" data-category="friends">Friends</button>
+            <button type="button" class="preset-pill stroke-btn" data-category="food">Food</button>
+            <button type="button" class="preset-pill stroke-btn" data-category="gaming">Gaming</button>
+            <button type="button" class="preset-pill stroke-btn" data-category="work">Work</button>
+          </div>
+        </div>
+
+        <div id="templatesGrid" class="templates-grid"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: HOW TO USE PAGE ==================== -->
     <section id="howToView" class="view-section" aria-labelledby="howToHeading">
       <div class="page-narrow">
         <div class="glass-card page-banner">
@@ -352,7 +412,7 @@
             </div>
             <h2 class="card-title stroke-heading">Write Question &amp; Answers</h2>
             <p class="card-desc stroke-body">
-              Enter your question and 2 to 8 choices. Enable multiple picks if voters can choose more than one.
+              Enter your question or load a template. Add 2 to 8 answers and toggle multiple picks if needed.
             </p>
           </article>
 
@@ -365,7 +425,7 @@
             </div>
             <h2 class="card-title stroke-heading">Set Expiration</h2>
             <p class="card-desc stroke-body">
-              Choose a quick preset or custom date and time. Voting closes automatically when the clock finishes.
+              Pick a quick timer or custom date and time. Voting locks automatically when the countdown ends.
             </p>
           </article>
 
@@ -376,9 +436,9 @@
                 <img src="assets/icon-share.png" alt="Share" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Send the Link</h2>
+            <h2 class="card-title stroke-heading">Share Link or QR</h2>
             <p class="card-desc stroke-body">
-              Generate your unique poll URL and send it to friends. Opening the link loads that poll page.
+              Copy your unique link, save the QR code, or post straight to WhatsApp, X, Facebook, Telegram, Reddit, or Discord.
             </p>
           </article>
 
@@ -391,7 +451,7 @@
             </div>
             <h2 class="card-title stroke-heading">Track Results</h2>
             <p class="card-desc stroke-body">
-              Open My Polls anytime to revisit active or expired polls and copy their links again.
+              Visit My Polls anytime to reopen active or expired polls and share their links again.
             </p>
           </article>
         </div>
@@ -404,7 +464,7 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 3: QUESTIONS & ANSWERS PAGE ==================== -->
+    <!-- ==================== VIEW 4: QUESTIONS & ANSWERS PAGE ==================== -->
     <section id="qaView" class="view-section" aria-labelledby="qaHeading">
       <div class="page-narrow">
         <div class="glass-card page-banner">
@@ -425,7 +485,7 @@
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  No. You can create a poll, copy the link, and vote immediately without signing up.
+                  No. You can create a poll, generate its QR code, and vote immediately without signing up.
                 </p>
               </div>
             </div>
@@ -437,7 +497,7 @@
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  Every poll generates a unique shareable URL. Anyone opening that link sees your question, answers, and live countdown timer.
+                  Every poll generates a unique URL and QR code. Anyone opening it sees your question, answers, and live timer.
                 </p>
               </div>
             </div>
@@ -449,7 +509,7 @@
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  Once the timer reaches zero, voting locks automatically and the page shows final results.
+                  Once the timer reaches zero, voting locks automatically and the page displays final results.
                 </p>
               </div>
             </div>
@@ -461,7 +521,7 @@
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  Yes. Turn on Multiple picks before generating your poll link.
+                  Yes. Enable Multiple picks before generating your poll link.
                 </p>
               </div>
             </div>
@@ -485,7 +545,7 @@
               </button>
               <div class="faq-body">
                 <p class="stroke-body">
-                  Your poll history is saved in My Polls so you can reopen, copy, or delete polls anytime.
+                  Your poll history is saved in My Polls so you can reopen, share, or remove polls anytime.
                 </p>
               </div>
             </div>
@@ -500,7 +560,7 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 4: PRIVACY POLICY PAGE ==================== -->
+    <!-- ==================== VIEW 5: PRIVACY POLICY PAGE ==================== -->
     <section id="privacyView" class="view-section" aria-labelledby="privacyHeading">
       <div class="page-narrow">
         <div class="glass-card page-banner">
@@ -523,7 +583,7 @@
           <div class="policy-section">
             <h2 class="card-title stroke-heading">2. Shared Links</h2>
             <p class="stroke-body">
-              Anyone with a poll link can view its question, options, expiration time, and vote totals. Avoid placing private personal information inside polls.
+              Anyone with a poll link or QR code can view its question, options, expiration time, and vote totals. Avoid placing private personal information inside polls.
             </p>
           </div>
 
@@ -547,7 +607,7 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 5: UNIQUE POLL PAGE ==================== -->
+    <!-- ==================== VIEW 6: UNIQUE POLL PAGE ==================== -->
     <section id="pollView" class="view-section" aria-labelledby="activePollQuestion">
       <div class="poll-page-wrap">
         <div class="glass-card active-poll-card">
@@ -600,14 +660,48 @@
 
             <div class="footer-share-row">
               <button type="button" id="activeCopyLinkBtn" class="btn btn-glass-blue stroke-btn">Copy Link</button>
+              <button type="button" id="activeQrToggleBtn" class="btn btn-glass-purple stroke-btn">QR Code</button>
               <button type="button" id="backToBuilderBtn" class="btn btn-dark stroke-btn">Create Poll</button>
+            </div>
+          </div>
+
+          <!-- Active Poll QR & Quick Social Share -->
+          <div id="activeQrWrap" class="active-share-drawer hidden">
+            <div class="qr-share-layout">
+              <div class="qr-glass-frame">
+                <canvas id="activeQrCanvas" width="160" height="160" aria-label="Poll QR Code"></canvas>
+              </div>
+              <div class="qr-share-side">
+                <span class="social-share-label stroke-subtle">Share This Poll</span>
+                <div id="activeSocialShareRow" class="social-share-grid">
+                  <button type="button" class="social-icon-btn" data-social="whatsapp" title="Share on WhatsApp" aria-label="Share on WhatsApp">
+                    <img src="assets/social-whatsapp.png" alt="WhatsApp" />
+                  </button>
+                  <button type="button" class="social-icon-btn" data-social="x" title="Share on X" aria-label="Share on X">
+                    <img src="assets/social-x.png" alt="X" />
+                  </button>
+                  <button type="button" class="social-icon-btn" data-social="facebook" title="Share on Facebook" aria-label="Share on Facebook">
+                    <img src="assets/social-facebook.png" alt="Facebook" />
+                  </button>
+                  <button type="button" class="social-icon-btn" data-social="telegram" title="Share on Telegram" aria-label="Share on Telegram">
+                    <img src="assets/social-telegram.png" alt="Telegram" />
+                  </button>
+                  <button type="button" class="social-icon-btn" data-social="reddit" title="Share on Reddit" aria-label="Share on Reddit">
+                    <img src="assets/social-reddit.png" alt="Reddit" />
+                  </button>
+                  <button type="button" class="social-icon-btn" data-social="discord" title="Copy for Discord" aria-label="Copy for Discord">
+                    <img src="assets/social-discord.png" alt="Discord" />
+                  </button>
+                </div>
+                <button type="button" id="activeDownloadQrBtn" class="btn btn-dark btn-sm stroke-btn">Save QR</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ==================== VIEW 6: MY POLLS PAGE ==================== -->
+    <!-- ==================== VIEW 7: MY POLLS PAGE ==================== -->
     <section id="savedView" class="view-section" aria-labelledby="savedHeading">
       <div class="glass-card saved-card">
         <div class="saved-header">
@@ -632,12 +726,14 @@
   <footer class="site-footer">
     <div class="footer-links">
       <button type="button" class="footer-nav-link stroke-subtle" data-page="create">Create Poll</button>
+      <button type="button" class="footer-nav-link stroke-subtle" data-page="templates">Templates</button>
       <button type="button" class="footer-nav-link stroke-subtle" data-page="how-to-use">How to Use</button>
       <button type="button" class="footer-nav-link stroke-subtle" data-page="qa">Q&amp;A</button>
       <button type="button" class="footer-nav-link stroke-subtle" data-page="privacy">Privacy</button>
     </div>
   </footer>
 
-  <script src="app.js?v=20261125"></script>
+  <script src="vendor-qr.js?v=20261126"></script>
+  <script src="app.js?v=20261126"></script>
 </body>
 </html>
