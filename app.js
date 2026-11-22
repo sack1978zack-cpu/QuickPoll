@@ -135,6 +135,7 @@
     navHowToBtn: document.getElementById('navHowToBtn'),
     navQaBtn: document.getElementById('navQaBtn'),
     navPrivacyBtn: document.getElementById('navPrivacyBtn'),
+    navDonateBtn: document.getElementById('navDonateBtn'),
     navSavedBtn: document.getElementById('navSavedBtn'),
     savedCountBadge: document.getElementById('savedCountBadge'),
     mobileSavedCountBadge: document.getElementById('mobileSavedCountBadge'),
@@ -155,6 +156,7 @@
     privacyView: document.getElementById('privacyView'),
     pollView: document.getElementById('pollView'),
     savedView: document.getElementById('savedView'),
+    donateView: document.getElementById('donateView'),
 
     templateFilterBar: document.getElementById('templateFilterBar'),
     templatesGrid: document.getElementById('templatesGrid'),
@@ -178,7 +180,7 @@
     addOptionBtn: document.getElementById('addOptionBtn'),
     multiChoiceToggle: document.getElementById('multiChoiceToggle'),
 
-    presetPills: Array.from(document.querySelectorAll('.preset-pill')),
+    presetPills: Array.from(document.querySelectorAll('#pollForm .preset-pill')),
     customDateWrap: document.getElementById('customDateWrap'),
     customExpiryInput: document.getElementById('customExpiryInput'),
     expiryLiveSummary: document.getElementById('expiryLiveSummary'),
@@ -230,6 +232,13 @@
 
     savedPollsGrid: document.getElementById('savedPollsGrid'),
     savedBackBtn: document.getElementById('savedBackBtn'),
+
+    footerDonateBtn: document.getElementById('footerDonateBtn'),
+    donatePresetRow: document.getElementById('donatePresetRow'),
+    donateCustomInput: document.getElementById('donateCustomInput'),
+    donateHomelessShare: document.getElementById('donateHomelessShare'),
+    donateSiteShare: document.getElementById('donateSiteShare'),
+    donateCheckoutBtn: document.getElementById('donateCheckoutBtn'),
   };
 
   /* ========================================================================
@@ -498,12 +507,14 @@
     el.privacyView.classList.toggle('active', pageName === 'privacy');
     el.pollView.classList.toggle('active', pageName === 'poll');
     el.savedView.classList.toggle('active', pageName === 'saved');
+    el.donateView.classList.toggle('active', pageName === 'donate');
 
     el.navCreateBtn.classList.toggle('active', pageName === 'create');
     el.navTemplatesBtn.classList.toggle('active', pageName === 'templates');
     el.navHowToBtn.classList.toggle('active', pageName === 'how-to-use');
     el.navQaBtn.classList.toggle('active', pageName === 'qa');
     el.navPrivacyBtn.classList.toggle('active', pageName === 'privacy');
+    el.navDonateBtn.classList.toggle('active', pageName === 'donate');
     el.navSavedBtn.classList.toggle('active', pageName === 'saved');
 
     el.drawerNavBtns.forEach((btn) => {
@@ -1478,7 +1489,7 @@
     }
 
     const hashPage = window.location.hash.replace('#', '');
-    if (['create', 'templates', 'how-to-use', 'qa', 'privacy', 'saved'].includes(hashPage)) {
+    if (['create', 'templates', 'how-to-use', 'qa', 'privacy', 'donate', 'saved'].includes(hashPage)) {
       navigateToPage(hashPage, false);
       return true;
     }
@@ -1502,9 +1513,44 @@
     el.navHowToBtn.addEventListener('click', () => navigateToPage('how-to-use'));
     el.navQaBtn.addEventListener('click', () => navigateToPage('qa'));
     el.navPrivacyBtn.addEventListener('click', () => navigateToPage('privacy'));
+    el.navDonateBtn.addEventListener('click', () => navigateToPage('donate'));
+    el.footerDonateBtn.addEventListener('click', () => navigateToPage('donate'));
     el.navSavedBtn.addEventListener('click', () => navigateToPage('saved'));
     el.savedBackBtn.addEventListener('click', () => navigateToPage('create'));
     el.backToBuilderBtn.addEventListener('click', () => navigateToPage('create'));
+
+    const updateDonationImpact = (rawVal) => {
+      const val = Math.max(0, Number(rawVal) || 0);
+      const homeless = val * 0.2;
+      const site = val * 0.8;
+      if (el.donateHomelessShare) el.donateHomelessShare.textContent = `£${homeless.toFixed(2)}`;
+      if (el.donateSiteShare) el.donateSiteShare.textContent = `£${site.toFixed(2)}`;
+    };
+
+    if (el.donatePresetRow) {
+      const donatePills = Array.from(el.donatePresetRow.querySelectorAll('.preset-pill'));
+      donatePills.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          donatePills.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          const amt = Number(btn.dataset.amount) || 10;
+          if (el.donateCustomInput) el.donateCustomInput.value = String(amt);
+          updateDonationImpact(amt);
+        });
+      });
+    }
+
+    if (el.donateCustomInput) {
+      el.donateCustomInput.addEventListener('input', (e) => {
+        if (el.donatePresetRow) {
+          el.donatePresetRow.querySelectorAll('.preset-pill').forEach((b) => {
+            b.classList.toggle('active', Number(b.dataset.amount) === Number(e.target.value));
+          });
+        }
+        updateDonationImpact(e.target.value);
+      });
+      updateDonationImpact(el.donateCustomInput.value);
+    }
 
     if (el.templateFilterBar) {
       el.templateFilterBar.querySelectorAll('.preset-pill').forEach((btn) => {

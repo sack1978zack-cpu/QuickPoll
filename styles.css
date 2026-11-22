@@ -1963,6 +1963,197 @@ body {
 }
 
 /* ==========================================================================
+   Standout Emerald Green Donation Button & Donation Page
+   ========================================================================== */
+
+.btn-donate-green {
+  background:
+    var(--grad-glass-top),
+    linear-gradient(135deg, #22c55e 0%, #16a34a 52%, #0d7a38 100%);
+  border: 2px solid #86efac;
+  box-shadow:
+    0 5px 0 #000000,
+    0 12px 28px rgba(22, 163, 74, 0.45),
+    0 0 24px rgba(34, 197, 94, 0.28),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.48);
+  padding: 11px 22px;
+  gap: 13px;
+  border-radius: var(--radius-lg);
+}
+
+.btn-donate-green:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: var(--gold-light);
+  box-shadow:
+    0 7px 0 #000000,
+    0 16px 34px rgba(34, 197, 94, 0.56),
+    0 0 30px rgba(245, 197, 66, 0.25),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.58);
+}
+
+.icon-slot-donate-btn {
+  width: 38px;
+  height: 38px;
+}
+
+.donate-btn-text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  line-height: 1.15;
+}
+
+.donate-btn-title {
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+.donate-btn-sub {
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0.96;
+}
+
+.footer-donate-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.pledge-badge {
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  border: 1.5px solid #86efac;
+  box-shadow: 0 3px 0 #000000, 0 0 18px rgba(34, 197, 94, 0.35);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.donate-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.donate-info-card,
+.donate-calc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pledge-points {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pledge-point-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(7, 7, 14, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.pledge-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.pledge-dot-green {
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+}
+
+.pledge-dot-gold {
+  background: var(--gold);
+  box-shadow: 0 0 10px rgba(245, 197, 66, 0.9);
+}
+
+.donate-custom-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.impact-breakdown-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(7, 7, 14, 0.9);
+  border: 1.5px solid rgba(34, 197, 94, 0.38);
+}
+
+.impact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.impact-highlight {
+  color: #86efac;
+  font-size: 1.05rem;
+}
+
+.impact-bar-track {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(245, 197, 66, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.impact-bar-homeless {
+  width: 20%;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #86efac);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+}
+
+.donate-videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.video-slot-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background:
+    var(--grad-glass-top),
+    rgba(8, 8, 16, 0.9);
+  border: 1.5px dashed rgba(34, 197, 94, 0.45);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.65);
+}
+
+.video-status-pill {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(22, 163, 74, 0.24);
+  border: 1px solid rgba(134, 239, 172, 0.5);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* ==========================================================================
    Toast & Footer
    ========================================================================== */
 
@@ -1992,9 +2183,11 @@ body {
 .site-footer {
   position: relative;
   z-index: 10;
-  padding: 16px 22px 32px;
+  padding: 18px 22px 34px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .footer-links {
@@ -2059,7 +2252,8 @@ body {
 
   .live-status-strip,
   .style-row,
-  .share-action-buttons {
+  .share-action-buttons,
+  .donate-grid {
     grid-template-columns: 1fr;
   }
 

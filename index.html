@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="assets/logo.png?v=20261126" />
-  <link rel="stylesheet" href="styles.css?v=20261126" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261127" />
+  <link rel="stylesheet" href="styles.css?v=20261127" />
 </head>
 <body class="theme-sovereign">
   <!-- Clean Luxury Obsidian Ambient Backdrop -->
@@ -50,6 +50,9 @@
         </button>
         <button type="button" id="navPrivacyBtn" class="btn btn-nav stroke-btn" data-page="privacy">
           Privacy
+        </button>
+        <button type="button" id="navDonateBtn" class="btn btn-nav stroke-btn" data-page="donate">
+          Donate
         </button>
         <button type="button" id="navSavedBtn" class="btn btn-nav stroke-btn" data-page="saved">
           My Polls <span id="savedCountBadge" class="count-pill">0</span>
@@ -103,6 +106,9 @@
       </button>
       <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="privacy">
         Privacy
+      </button>
+      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="donate">
+        Donate
       </button>
       <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="saved">
         My Polls <span id="mobileSavedCountBadge" class="count-pill">0</span>
@@ -721,19 +727,143 @@
       </div>
     </section>
 
+    <!-- ==================== VIEW 8: DONATIONS & 20% HOMELESS PLEDGE ==================== -->
+    <section id="donateView" class="view-section" aria-labelledby="donateHeading">
+      <div class="page-narrow">
+        <div class="glass-card page-banner donate-hero-banner">
+          <div class="icon-slot icon-slot-xl" data-icon-slot="donate-hero">
+            <img src="assets/icon-donate.png" alt="Donate" class="slot-img" />
+          </div>
+          <div class="banner-text-grow">
+            <h1 id="donateHeading" class="page-title stroke-display">Donations</h1>
+            <p class="card-desc stroke-body">20% of every donation goes directly to helping the homeless.</p>
+          </div>
+          <span class="pledge-badge stroke-btn">20% Pledge</span>
+        </div>
+
+        <div class="donate-grid">
+          <article class="glass-card donate-info-card">
+            <h2 class="card-title stroke-heading">Where Your Donation Goes</h2>
+            <p class="stroke-body">
+              Donations help keep QuickPoll online and free for everyone. At the same time, we give 20% of every single donation straight back to people experiencing homelessness.
+            </p>
+            <div class="pledge-points">
+              <div class="pledge-point-row">
+                <span class="pledge-dot pledge-dot-green"></span>
+                <span class="stroke-body"><strong>20% Direct Aid:</strong> Hot meals, bottled water, warm clothes, and daily essentials handed out directly.</span>
+              </div>
+              <div class="pledge-point-row">
+                <span class="pledge-dot pledge-dot-gold"></span>
+                <span class="stroke-body"><strong>80% Site Support:</strong> Servers, domain hosting, and building new poll tools.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="glass-card donate-calc-card">
+            <h2 class="card-title stroke-heading">Live 20% Impact Preview</h2>
+            <div id="donatePresetRow" class="preset-pills" role="group" aria-label="Donation amounts">
+              <button type="button" class="preset-pill stroke-btn" data-amount="5">£5</button>
+              <button type="button" class="preset-pill stroke-btn active" data-amount="10">£10</button>
+              <button type="button" class="preset-pill stroke-btn" data-amount="20">£20</button>
+              <button type="button" class="preset-pill stroke-btn" data-amount="50">£50</button>
+            </div>
+
+            <div class="donate-custom-row">
+              <label for="donateCustomInput" class="field-label stroke-label">Custom Amount (£)</label>
+              <input id="donateCustomInput" type="number" min="1" step="1" value="10" class="field-input stroke-body" />
+            </div>
+
+            <div class="impact-breakdown-box">
+              <div class="impact-row">
+                <span class="stroke-subtle">20% For Homeless Food &amp; Supplies</span>
+                <strong id="donateHomelessShare" class="impact-highlight stroke-label">£2.00</strong>
+              </div>
+              <div class="impact-row">
+                <span class="stroke-subtle">80% Hosting &amp; Development</span>
+                <strong id="donateSiteShare" class="stroke-label">£8.00</strong>
+              </div>
+              <div class="impact-bar-track">
+                <div class="impact-bar-homeless"></div>
+              </div>
+            </div>
+
+            <a
+              id="donateCheckoutBtn"
+              href="https://buy.stripe.com/fZu6oB4LqgPVbJn8YqdQQ03"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-donate-green btn-lg stroke-btn"
+            >
+              <span class="icon-slot icon-slot-donate-btn" data-icon-slot="donate-cta">
+                <img src="assets/icon-donate.png" alt="" class="slot-img" />
+              </span>
+              <span class="donate-btn-text-group">
+                <span class="donate-btn-title stroke-btn">Donate Now</span>
+                <span class="donate-btn-sub stroke-subtle">20% Goes to Homeless Aid</span>
+              </span>
+            </a>
+          </article>
+        </div>
+
+        <div class="glass-card donate-videos-card">
+          <div class="card-header-row">
+            <div class="icon-slot icon-slot-md" data-icon-slot="donate-videos">
+              <img src="assets/icon-share.png" alt="Monthly Videos" class="slot-img" />
+            </div>
+            <div class="header-title-block">
+              <h2 class="card-title stroke-heading">End of Month Video Uploads</h2>
+              <p class="card-desc stroke-body">
+                At the end of each month, we upload videos here showing us giving food, drinks, and essentials to homeless people.
+              </p>
+            </div>
+          </div>
+
+          <div id="donateVideosGrid" class="donate-videos-grid">
+            <div class="video-slot-card">
+              <span class="video-status-pill stroke-subtle">Uploading End of Month</span>
+              <h3 class="saved-item-question stroke-heading">Monthly Outreach Video</h3>
+              <p class="card-desc stroke-body">
+                Video proof of food and supplies handed out from this month's 20% donation fund will appear here at the end of the month.
+              </p>
+            </div>
+            <div class="video-slot-card">
+              <span class="video-status-pill stroke-subtle">Community Food &amp; Essentials</span>
+              <h3 class="saved-item-question stroke-heading">Next Drop Slot</h3>
+              <p class="card-desc stroke-body">
+                Every monthly video upload includes receipts and footage showing donations reaching people directly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="site-footer">
+    <div class="footer-donate-wrap">
+      <button type="button" id="footerDonateBtn" class="btn btn-donate-green btn-lg stroke-btn" data-page="donate">
+        <span class="icon-slot icon-slot-donate-btn" data-icon-slot="donate-footer">
+          <img src="assets/icon-donate.png" alt="Donate" class="slot-img" />
+        </span>
+        <span class="donate-btn-text-group">
+          <span class="donate-btn-title stroke-btn">Donate</span>
+          <span class="donate-btn-sub stroke-subtle">20% Helps the Homeless</span>
+        </span>
+      </button>
+    </div>
+
     <div class="footer-links">
       <button type="button" class="footer-nav-link stroke-subtle" data-page="create">Create Poll</button>
       <button type="button" class="footer-nav-link stroke-subtle" data-page="templates">Templates</button>
       <button type="button" class="footer-nav-link stroke-subtle" data-page="how-to-use">How to Use</button>
       <button type="button" class="footer-nav-link stroke-subtle" data-page="qa">Q&amp;A</button>
       <button type="button" class="footer-nav-link stroke-subtle" data-page="privacy">Privacy</button>
+      <button type="button" class="footer-nav-link stroke-subtle" data-page="donate">Donate</button>
     </div>
   </footer>
 
-  <script src="vendor-qr.js?v=20261126"></script>
-  <script src="app.js?v=20261126"></script>
+  <script src="vendor-qr.js?v=20261127"></script>
+  <script src="app.js?v=20261127"></script>
 </body>
 </html>
