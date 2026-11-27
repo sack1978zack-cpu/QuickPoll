@@ -625,6 +625,7 @@ body {
   position: relative;
   z-index: 10;
   max-width: 1240px;
+  min-height: calc(100vh - 220px);
   margin: 0 auto;
   padding: 26px 22px 56px;
 }
@@ -2273,6 +2274,26 @@ body {
   .social-share-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+.inline-policy-link {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.inline-policy-link:hover {
+  color: #ffffff;
+}
+
+/* Google AdSense Auto Ads Isolation */
+ins.adsbygoogle,
+.google-auto-placed {
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+  overflow: visible !important;
+  max-width: 100%;
+  margin: 14px auto;
 }
 
 @media (prefers-reduced-motion: reduce) {

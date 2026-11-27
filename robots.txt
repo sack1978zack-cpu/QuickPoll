@@ -1,0 +1,10 @@
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+Disallow: /polls-data/
+
+User-agent: *
+Allow: /
+Disallow: /polls-data/

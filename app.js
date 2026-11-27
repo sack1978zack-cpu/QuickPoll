@@ -494,6 +494,48 @@
      Navigation & Routing
      ======================================================================== */
 
+  const PAGE_META = {
+    create: {
+      title: 'QuickPoll | Create Poll',
+      desc: 'Create polls with custom expiration timers, QR codes, and shareable links.',
+    },
+    templates: {
+      title: 'QuickPoll | Poll Templates',
+      desc: 'Choose ready made poll templates for friends, food, gaming, and work.',
+    },
+    'how-to-use': {
+      title: 'QuickPoll | How to Use',
+      desc: 'Learn how to create a poll, set an expiration timer, and share your link or QR code.',
+    },
+    qa: {
+      title: 'QuickPoll | Questions & Answers',
+      desc: 'Answers to common questions about creating, sharing, and voting on QuickPoll.',
+    },
+    privacy: {
+      title: 'QuickPoll | Privacy Policy',
+      desc: 'Read QuickPoll privacy, storage, cookie, and Google AdSense policy details.',
+    },
+    donate: {
+      title: 'QuickPoll | Donations & 20% Homeless Pledge',
+      desc: 'Support QuickPoll where 20% of donations go toward food and essentials for homeless people.',
+    },
+    saved: {
+      title: 'QuickPoll | My Polls',
+      desc: 'View, reopen, copy, and manage your saved polls.',
+    },
+    poll: {
+      title: 'QuickPoll | Vote',
+      desc: 'Vote live and watch real time poll results.',
+    },
+  };
+
+  function updateDocumentMeta(pageName, customTitle) {
+    const meta = PAGE_META[pageName] || PAGE_META.create;
+    document.title = customTitle || meta.title;
+    const descTag = document.querySelector('meta[name="description"]');
+    if (descTag) descTag.setAttribute('content', meta.desc);
+  }
+
   function navigateToPage(pageName, updateHash = true) {
     clearInterval(state.countdownTimerId);
     clearInterval(state.pollRefreshTimerId);
@@ -528,6 +570,8 @@
     } else if (pageName === 'saved') {
       renderSavedPolls();
     }
+
+    updateDocumentMeta(pageName);
 
     if (updateHash && pageName !== 'poll') {
       const hashTarget = `#${pageName}`;
@@ -907,6 +951,7 @@
     applyTheme(poll.theme || 'sovereign');
     if (el.activeQrWrap) el.activeQrWrap.classList.add('hidden');
     navigateToPage('poll', false);
+    updateDocumentMeta('poll', `${poll.q} | QuickPoll`);
 
     if (updateHistoryUrl) {
       const targetUrl = poll.shareUrl || buildShareUrl(poll, state.serverMode && !poll._fromUrlPayload);

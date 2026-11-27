@@ -1,10 +1,17 @@
 DirectoryIndex index.html
 
+<IfModule mod_mime.c>
+  AddType text/plain .txt
+</IfModule>
+
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
   <FilesMatch "\.(html|css|js|php)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
     Header set Expires "0"
+  </FilesMatch>
+  <FilesMatch "^(ads|robots)\.txt$">
+    Header set Cache-Control "public, max-age=300"
   </FilesMatch>
 </IfModule>
