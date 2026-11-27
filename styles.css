@@ -2202,6 +2202,11 @@ body {
   border: none;
   background: none;
   font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 4px 6px;
   cursor: pointer;
   opacity: 0.88;
   transition: opacity var(--transition-fast);

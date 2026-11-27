@@ -3,19 +3,114 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuickPoll</title>
-  <meta name="description" content="Create polls with custom expiration timers, QR codes, and shareable links." />
-  <meta name="robots" content="index, follow" />
+  <title>QuickPoll | Free Online Poll Maker With Timers &amp; QR Codes</title>
+  <meta name="description" content="Create free online polls in seconds with custom countdown timers, QR codes, instant social sharing, and live results. No signup needed." />
+  <meta name="keywords" content="online poll maker, free poll generator, quick poll, countdown poll, qr code poll, live voting" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#040407" />
   <meta name="google-adsense-account" content="ca-pub-7516098019742511" />
+  <link rel="canonical" id="canonicalLink" href="./" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="QuickPoll" />
+  <meta property="og:locale" content="en_GB" />
+  <meta property="og:title" content="QuickPoll | Free Online Poll Maker With Timers &amp; QR Codes" />
+  <meta property="og:description" content="Create free online polls in seconds with custom countdown timers, QR codes, instant social sharing, and live results. No signup needed." />
+  <meta property="og:image" content="assets/logo.png" />
+  <meta property="og:image:alt" content="QuickPoll Logo" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="QuickPoll | Free Online Poll Maker With Timers &amp; QR Codes" />
+  <meta name="twitter:description" content="Create free online polls in seconds with custom countdown timers, QR codes, instant social sharing, and live results. No signup needed." />
+  <meta name="twitter:image" content="assets/logo.png" />
+
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7516098019742511"
      crossorigin="anonymous"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "QuickPoll",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "All",
+        "description": "Create free online polls in seconds with custom countdown timers, QR codes, instant social sharing, and live results. No signup needed.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "GBP"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Do I need an account to create or vote?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. You can create a poll, generate its QR code, and vote immediately without signing up."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do friends open and vote on my poll?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Every poll generates a unique URL and QR code. Anyone opening it sees your question, answers, and live timer."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens when a poll expires?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Once the timer reaches zero, voting locks automatically and the page displays final results."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can voters select multiple answers?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Enable Multiple picks before generating your poll link."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can someone vote twice from the same browser?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Each browser remembers submitted votes per poll and locks voting afterward to prevent repeat picks."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Where are my created polls stored?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Your poll history is saved in My Polls so you can reopen, share, or remove polls anytime."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin />
   <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="assets/logo.png?v=20261128" />
-  <link rel="stylesheet" href="styles.css?v=20261128" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261129" />
+  <link rel="stylesheet" href="styles.css?v=20261129" />
 </head>
 <body class="theme-sovereign">
   <!-- Clean Luxury Obsidian Ambient Backdrop -->
@@ -33,34 +128,34 @@
       <a href="#create" id="brandHomeLink" class="brand-lockup" aria-label="QuickPoll Home">
         <!-- ICON SLOT: Brand Logo (transparent PNG) -->
         <span class="icon-slot icon-slot-logo" data-icon-slot="logo">
-          <img src="assets/logo.png" alt="QuickPoll Logo" class="slot-img" />
+          <img src="assets/logo.png" alt="QuickPoll Logo" width="48" height="48" class="slot-img" />
         </span>
         <span class="brand-title stroke-display">QuickPoll</span>
       </a>
 
-      <!-- Desktop Navigation -->
+      <!-- Desktop Navigation (Crawlable Anchor Links) -->
       <nav class="header-actions desktop-nav" aria-label="Primary navigation">
-        <button type="button" id="navCreateBtn" class="btn btn-nav stroke-btn active" data-page="create">
+        <a href="#create" id="navCreateBtn" class="btn btn-nav stroke-btn active" data-page="create">
           Create Poll
-        </button>
-        <button type="button" id="navTemplatesBtn" class="btn btn-nav stroke-btn" data-page="templates">
+        </a>
+        <a href="#templates" id="navTemplatesBtn" class="btn btn-nav stroke-btn" data-page="templates">
           Templates
-        </button>
-        <button type="button" id="navHowToBtn" class="btn btn-nav stroke-btn" data-page="how-to-use">
+        </a>
+        <a href="#how-to-use" id="navHowToBtn" class="btn btn-nav stroke-btn" data-page="how-to-use">
           How to Use
-        </button>
-        <button type="button" id="navQaBtn" class="btn btn-nav stroke-btn" data-page="qa">
+        </a>
+        <a href="#qa" id="navQaBtn" class="btn btn-nav stroke-btn" data-page="qa">
           Q&amp;A
-        </button>
-        <button type="button" id="navPrivacyBtn" class="btn btn-nav stroke-btn" data-page="privacy">
+        </a>
+        <a href="#privacy" id="navPrivacyBtn" class="btn btn-nav stroke-btn" data-page="privacy">
           Privacy
-        </button>
-        <button type="button" id="navDonateBtn" class="btn btn-nav stroke-btn" data-page="donate">
+        </a>
+        <a href="#donate" id="navDonateBtn" class="btn btn-nav stroke-btn" data-page="donate">
           Donate
-        </button>
-        <button type="button" id="navSavedBtn" class="btn btn-nav stroke-btn" data-page="saved">
+        </a>
+        <a href="#saved" id="navSavedBtn" class="btn btn-nav stroke-btn" data-page="saved">
           My Polls <span id="savedCountBadge" class="count-pill">0</span>
-        </button>
+        </a>
 
         <!-- ICON SLOT: Header Custom Badge (leave or place your own custom icon inside) -->
         <span class="icon-slot icon-slot-optional" data-icon-slot="custom-header" title="Custom icon slot">
@@ -74,7 +169,7 @@
           type="button"
           id="hamburgerBtn"
           class="hamburger-btn"
-          aria-label="Open menu"
+          aria-label="Open navigation menu"
           aria-expanded="false"
           aria-controls="mobileNavDrawer"
         >
@@ -91,32 +186,32 @@
   <aside id="mobileNavDrawer" class="mobile-drawer" aria-label="Mobile navigation" aria-hidden="true">
     <div class="drawer-head">
       <span class="drawer-title stroke-heading">Menu</span>
-      <button type="button" id="closeDrawerBtn" class="btn btn-dark btn-sm stroke-btn" aria-label="Close menu">
+      <button type="button" id="closeDrawerBtn" class="btn btn-dark btn-sm stroke-btn" aria-label="Close navigation menu">
         Close
       </button>
     </div>
-    <nav class="drawer-links">
-      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn active" data-page="create">
+    <nav class="drawer-links" aria-label="Drawer navigation">
+      <a href="#create" class="btn btn-nav drawer-nav-btn stroke-btn active" data-page="create">
         Create Poll
-      </button>
-      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="templates">
+      </a>
+      <a href="#templates" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="templates">
         Templates
-      </button>
-      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="how-to-use">
+      </a>
+      <a href="#how-to-use" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="how-to-use">
         How to Use
-      </button>
-      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="qa">
+      </a>
+      <a href="#qa" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="qa">
         Q&amp;A
-      </button>
-      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="privacy">
+      </a>
+      <a href="#privacy" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="privacy">
         Privacy
-      </button>
-      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="donate">
+      </a>
+      <a href="#donate" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="donate">
         Donate
-      </button>
-      <button type="button" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="saved">
+      </a>
+      <a href="#saved" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="saved">
         My Polls <span id="mobileSavedCountBadge" class="count-pill">0</span>
-      </button>
+      </a>
     </nav>
   </aside>
 
@@ -135,10 +230,10 @@
           <div class="card-header-row">
             <!-- ICON SLOT: Create Poll Icon -->
             <div class="icon-slot icon-slot-md" data-icon-slot="question">
-              <img src="assets/icon-poll.png" alt="Poll Icon" class="slot-img" />
+              <img src="assets/icon-poll.png" alt="Poll Icon" width="40" height="40" class="slot-img" />
             </div>
             <div class="header-title-block">
-              <h1 id="createHeading" class="card-title stroke-heading">Create Poll</h1>
+              <h1 id="createHeading" class="card-title stroke-heading">Create Free Online Polls</h1>
             </div>
             <button type="button" id="quickTemplatesLink" class="btn btn-dark btn-sm stroke-btn">Templates</button>
             <span id="overallReadinessBadge" class="readiness-chip stroke-subtle">Draft</span>
@@ -183,7 +278,7 @@
           <!-- Answers -->
           <div class="field-group">
             <div class="label-row">
-              <label class="field-label stroke-label">Answers</label>
+              <span class="field-label stroke-label">Answers</span>
               <span id="optionCountStatus" class="live-counter stroke-subtle">2 of 8</span>
             </div>
 
@@ -208,10 +303,10 @@
             <div class="card-header-row compact">
               <!-- ICON SLOT: Expiry Timer Icon -->
               <div class="icon-slot icon-slot-md" data-icon-slot="expiry">
-                <img src="assets/icon-timer.png" alt="Timer Icon" class="slot-img" />
+                <img src="assets/icon-timer.png" alt="Timer Icon" width="40" height="40" class="slot-img" />
               </div>
               <div>
-                <label class="field-label stroke-label">Expires</label>
+                <span class="field-label stroke-label">Expires</span>
                 <p id="expiryLiveSummary" class="card-desc stroke-body">In 24 hours</p>
               </div>
             </div>
@@ -255,16 +350,16 @@
               <span class="field-label stroke-label">Icon Slot</span>
               <div class="icon-picker-row" role="group" aria-label="Poll icon">
                 <button type="button" class="icon-pick-btn active" data-icon="assets/icon-vote.png" title="Vote Shield">
-                  <img src="assets/icon-vote.png" alt="Vote Shield" />
+                  <img src="assets/icon-vote.png" alt="Vote Shield" width="30" height="30" />
                 </button>
                 <button type="button" class="icon-pick-btn" data-icon="assets/icon-poll.png" title="Poll Bars">
-                  <img src="assets/icon-poll.png" alt="Poll Bars" />
+                  <img src="assets/icon-poll.png" alt="Poll Bars" width="30" height="30" />
                 </button>
                 <button type="button" class="icon-pick-btn" data-icon="assets/icon-timer.png" title="Timer">
-                  <img src="assets/icon-timer.png" alt="Timer" />
+                  <img src="assets/icon-timer.png" alt="Timer" width="30" height="30" />
                 </button>
                 <button type="button" class="icon-pick-btn" data-icon="assets/icon-share.png" title="Share Pulse">
-                  <img src="assets/icon-share.png" alt="Share Pulse" />
+                  <img src="assets/icon-share.png" alt="Share Pulse" width="30" height="30" />
                 </button>
                 <button type="button" class="icon-pick-btn icon-pick-empty" data-icon="" title="None">
                   <span class="stroke-subtle">None</span>
@@ -278,7 +373,7 @@
             <button type="submit" id="generatePollBtn" class="btn btn-gold btn-lg stroke-btn">
               <!-- ICON SLOT: Share CTA Icon -->
               <span class="icon-slot icon-slot-sm" data-icon-slot="share-cta">
-                <img src="assets/icon-share.png" alt="" class="slot-img" />
+                <img src="assets/icon-share.png" alt="Share Poll" width="22" height="22" class="slot-img" />
               </span>
               <span>Generate Poll Link</span>
             </button>
@@ -299,7 +394,7 @@
             <div class="poll-display-head">
               <!-- ICON SLOT: Preview Poll Icon -->
               <div id="previewIconSlot" class="icon-slot icon-slot-lg" data-icon-slot="preview-badge">
-                <img id="previewIconImg" src="assets/icon-vote.png" alt="Poll Badge Icon" class="slot-img" />
+                <img id="previewIconImg" src="assets/icon-vote.png" alt="Poll Badge Icon" width="48" height="48" class="slot-img" />
               </div>
               <div class="poll-head-text">
                 <h2 id="previewQuestion" class="poll-question stroke-heading">
@@ -322,7 +417,7 @@
             <div class="card-header-row compact">
               <!-- ICON SLOT: Share Result Icon -->
               <div class="icon-slot icon-slot-md" data-icon-slot="share-result">
-                <img src="assets/icon-share.png" alt="Share Icon" class="slot-img" />
+                <img src="assets/icon-share.png" alt="Share Icon" width="40" height="40" class="slot-img" />
               </div>
               <div>
                 <h3 class="card-title stroke-heading">Share Poll</h3>
@@ -330,7 +425,7 @@
             </div>
 
             <div class="share-url-box">
-              <input type="text" id="generatedUrlInput" class="field-input url-input stroke-body" readonly />
+              <input type="text" id="generatedUrlInput" class="field-input url-input stroke-body" aria-label="Generated poll URL" readonly />
               <button type="button" id="copyLinkBtn" class="btn btn-gold stroke-btn">Copy</button>
             </div>
 
@@ -343,7 +438,7 @@
                 <div class="qr-btn-stack">
                   <button type="button" id="downloadQrBtn" class="btn btn-dark btn-sm stroke-btn">Save QR</button>
                   <button type="button" id="openPollPageBtn" class="btn btn-glass-purple btn-sm stroke-btn">Open Poll</button>
-                  <button type="button" id="nativeShareBtn" class="btn btn-glass-blue btn-sm stroke-btn">More</button>
+                  <button type="button" id="nativeShareBtn" class="btn btn-glass-blue btn-sm stroke-btn">Share Link</button>
                 </div>
               </div>
             </div>
@@ -352,22 +447,22 @@
               <span class="social-share-label stroke-subtle">Quick Social Share</span>
               <div id="builderSocialShareRow" class="social-share-grid">
                 <button type="button" class="social-icon-btn" data-social="whatsapp" title="Share on WhatsApp" aria-label="Share on WhatsApp">
-                  <img src="assets/social-whatsapp.png" alt="WhatsApp" />
+                  <img src="assets/social-whatsapp.png" alt="WhatsApp" width="24" height="24" />
                 </button>
                 <button type="button" class="social-icon-btn" data-social="x" title="Share on X" aria-label="Share on X">
-                  <img src="assets/social-x.png" alt="X" />
+                  <img src="assets/social-x.png" alt="X" width="24" height="24" />
                 </button>
                 <button type="button" class="social-icon-btn" data-social="facebook" title="Share on Facebook" aria-label="Share on Facebook">
-                  <img src="assets/social-facebook.png" alt="Facebook" />
+                  <img src="assets/social-facebook.png" alt="Facebook" width="24" height="24" />
                 </button>
                 <button type="button" class="social-icon-btn" data-social="telegram" title="Share on Telegram" aria-label="Share on Telegram">
-                  <img src="assets/social-telegram.png" alt="Telegram" />
+                  <img src="assets/social-telegram.png" alt="Telegram" width="24" height="24" />
                 </button>
                 <button type="button" class="social-icon-btn" data-social="reddit" title="Share on Reddit" aria-label="Share on Reddit">
-                  <img src="assets/social-reddit.png" alt="Reddit" />
+                  <img src="assets/social-reddit.png" alt="Reddit" width="24" height="24" />
                 </button>
                 <button type="button" class="social-icon-btn" data-social="discord" title="Copy for Discord" aria-label="Copy for Discord">
-                  <img src="assets/social-discord.png" alt="Discord" />
+                  <img src="assets/social-discord.png" alt="Discord" width="24" height="24" />
                 </button>
               </div>
             </div>
@@ -382,10 +477,10 @@
       <div class="page-wide">
         <div class="glass-card page-banner templates-banner">
           <div class="icon-slot icon-slot-lg" data-icon-slot="templates-hero">
-            <img src="assets/icon-poll.png" alt="Templates" class="slot-img" />
+            <img src="assets/icon-poll.png" alt="Poll Templates" width="48" height="48" class="slot-img" />
           </div>
           <div class="banner-text-grow">
-            <h1 id="templatesHeading" class="page-title stroke-display">Poll Templates</h1>
+            <h2 id="templatesHeading" class="page-title stroke-display">Poll Templates</h2>
           </div>
           <div id="templateFilterBar" class="preset-pills" role="group" aria-label="Template categories">
             <button type="button" class="preset-pill stroke-btn active" data-category="all">All</button>
@@ -405,10 +500,10 @@
       <div class="page-narrow">
         <div class="glass-card page-banner">
           <div class="icon-slot icon-slot-lg" data-icon-slot="howto-hero">
-            <img src="assets/logo.png" alt="QuickPoll" class="slot-img" />
+            <img src="assets/logo.png" alt="QuickPoll Guide" width="48" height="48" class="slot-img" />
           </div>
           <div>
-            <h1 id="howToHeading" class="page-title stroke-display">How to Use</h1>
+            <h2 id="howToHeading" class="page-title stroke-display">How to Use</h2>
           </div>
         </div>
 
@@ -417,10 +512,10 @@
             <div class="howto-step-head">
               <span class="step-badge stroke-btn">01</span>
               <div class="icon-slot icon-slot-md" data-icon-slot="howto-1">
-                <img src="assets/icon-poll.png" alt="Question" class="slot-img" />
+                <img src="assets/icon-poll.png" alt="Write Poll Question" width="40" height="40" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Write Question &amp; Answers</h2>
+            <h3 class="card-title stroke-heading">Write Question &amp; Answers</h3>
             <p class="card-desc stroke-body">
               Enter your question or load a template. Add 2 to 8 answers and toggle multiple picks if needed.
             </p>
@@ -430,10 +525,10 @@
             <div class="howto-step-head">
               <span class="step-badge stroke-btn">02</span>
               <div class="icon-slot icon-slot-md" data-icon-slot="howto-2">
-                <img src="assets/icon-timer.png" alt="Timer" class="slot-img" />
+                <img src="assets/icon-timer.png" alt="Set Poll Expiration" width="40" height="40" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Set Expiration</h2>
+            <h3 class="card-title stroke-heading">Set Expiration</h3>
             <p class="card-desc stroke-body">
               Pick a quick timer or custom date and time. Voting locks automatically when the countdown ends.
             </p>
@@ -443,10 +538,10 @@
             <div class="howto-step-head">
               <span class="step-badge stroke-btn">03</span>
               <div class="icon-slot icon-slot-md" data-icon-slot="howto-3">
-                <img src="assets/icon-share.png" alt="Share" class="slot-img" />
+                <img src="assets/icon-share.png" alt="Share Poll Link or QR" width="40" height="40" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Share Link or QR</h2>
+            <h3 class="card-title stroke-heading">Share Link or QR</h3>
             <p class="card-desc stroke-body">
               Copy your unique link, save the QR code, or post straight to WhatsApp, X, Facebook, Telegram, Reddit, or Discord.
             </p>
@@ -456,10 +551,10 @@
             <div class="howto-step-head">
               <span class="step-badge stroke-btn">04</span>
               <div class="icon-slot icon-slot-md" data-icon-slot="howto-4">
-                <img src="assets/icon-vote.png" alt="Results" class="slot-img" />
+                <img src="assets/icon-vote.png" alt="Track Poll Results" width="40" height="40" class="slot-img" />
               </div>
             </div>
-            <h2 class="card-title stroke-heading">Track Results</h2>
+            <h3 class="card-title stroke-heading">Track Results</h3>
             <p class="card-desc stroke-body">
               Visit My Polls anytime to reopen active or expired polls and share their links again.
             </p>
@@ -479,10 +574,10 @@
       <div class="page-narrow">
         <div class="glass-card page-banner">
           <div class="icon-slot icon-slot-lg" data-icon-slot="qa-hero">
-            <img src="assets/icon-vote.png" alt="Q&A" class="slot-img" />
+            <img src="assets/icon-vote.png" alt="Questions and Answers" width="48" height="48" class="slot-img" />
           </div>
           <div>
-            <h1 id="qaHeading" class="page-title stroke-display">Questions &amp; Answers</h1>
+            <h2 id="qaHeading" class="page-title stroke-display">Questions &amp; Answers</h2>
           </div>
         </div>
 
@@ -575,30 +670,30 @@
       <div class="page-narrow">
         <div class="glass-card page-banner">
           <div class="icon-slot icon-slot-lg" data-icon-slot="privacy-hero">
-            <img src="assets/icon-timer.png" alt="Privacy" class="slot-img" />
+            <img src="assets/icon-timer.png" alt="Privacy Policy" width="48" height="48" class="slot-img" />
           </div>
           <div>
-            <h1 id="privacyHeading" class="page-title stroke-display">Privacy Policy</h1>
+            <h2 id="privacyHeading" class="page-title stroke-display">Privacy Policy</h2>
           </div>
         </div>
 
         <div class="glass-card policy-card">
           <div class="policy-section">
-            <h2 class="card-title stroke-heading">1. Poll Data &amp; Browser Storage</h2>
+            <h3 class="card-title stroke-heading">1. Poll Data &amp; Browser Storage</h3>
             <p class="stroke-body">
               QuickPoll does not require accounts, names, or email addresses. Polls you create are either carried inside the shareable URL or saved on the host server solely to display the poll and count anonymous votes. Your browser stores your created poll list and vote lock locally.
             </p>
           </div>
 
           <div class="policy-section">
-            <h2 class="card-title stroke-heading">2. Shared Links</h2>
+            <h3 class="card-title stroke-heading">2. Shared Links</h3>
             <p class="stroke-body">
               Anyone with a poll link or QR code can view its question, options, expiration time, and vote totals. Avoid placing private personal information inside polls.
             </p>
           </div>
 
           <div class="policy-section">
-            <h2 class="card-title stroke-heading">3. Cookies &amp; Google AdSense</h2>
+            <h3 class="card-title stroke-heading">3. Cookies &amp; Google AdSense</h3>
             <p class="stroke-body">
               This site uses Google AdSense to serve advertisements. Third party vendors, including Google, use cookies to serve ads based on a visitor's prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads based on visits to this site and other sites across the Internet.
             </p>
@@ -608,7 +703,7 @@
           </div>
 
           <div class="policy-section">
-            <h2 class="card-title stroke-heading">4. Managing Data</h2>
+            <h3 class="card-title stroke-heading">4. Managing Data</h3>
             <p class="stroke-body">
               You can remove saved polls anytime from My Polls or clear your browser site data.
             </p>
@@ -630,7 +725,7 @@
             <div class="countdown-box" aria-live="off">
               <!-- ICON SLOT: Active Timer Icon -->
               <span class="icon-slot icon-slot-sm" data-icon-slot="active-timer">
-                <img src="assets/icon-timer.png" alt="" class="slot-img" />
+                <img src="assets/icon-timer.png" alt="Countdown Timer" width="22" height="22" class="slot-img" />
               </span>
               <span id="activeCountdownText" class="countdown-readout stroke-label">00h : 00m : 00s</span>
             </div>
@@ -639,10 +734,10 @@
           <div class="poll-display-head large">
             <!-- ICON SLOT: Active Poll Icon -->
             <div id="activePollIconSlot" class="icon-slot icon-slot-xl" data-icon-slot="active-poll-badge">
-              <img id="activePollIconImg" src="assets/icon-vote.png" alt="Poll Icon" class="slot-img" />
+              <img id="activePollIconImg" src="assets/icon-vote.png" alt="Poll Icon" width="60" height="60" class="slot-img" />
             </div>
             <div class="poll-head-text">
-              <h1 id="activePollQuestion" class="active-poll-title stroke-display">Loading poll...</h1>
+              <h2 id="activePollQuestion" class="active-poll-title stroke-display">Loading poll...</h2>
               <p id="activePollSubtitle" class="poll-meta stroke-body"></p>
             </div>
           </div>
@@ -653,7 +748,7 @@
             <button type="button" id="castVoteBtn" class="btn btn-gold btn-lg stroke-btn">
               <!-- ICON SLOT: Cast Vote Icon -->
               <span class="icon-slot icon-slot-sm" data-icon-slot="cast-vote">
-                <img src="assets/icon-vote.png" alt="" class="slot-img" />
+                <img src="assets/icon-vote.png" alt="Submit Vote" width="22" height="22" class="slot-img" />
               </span>
               <span>Submit Vote</span>
             </button>
@@ -685,22 +780,22 @@
                 <span class="social-share-label stroke-subtle">Share This Poll</span>
                 <div id="activeSocialShareRow" class="social-share-grid">
                   <button type="button" class="social-icon-btn" data-social="whatsapp" title="Share on WhatsApp" aria-label="Share on WhatsApp">
-                    <img src="assets/social-whatsapp.png" alt="WhatsApp" />
+                    <img src="assets/social-whatsapp.png" alt="WhatsApp" width="24" height="24" />
                   </button>
                   <button type="button" class="social-icon-btn" data-social="x" title="Share on X" aria-label="Share on X">
-                    <img src="assets/social-x.png" alt="X" />
+                    <img src="assets/social-x.png" alt="X" width="24" height="24" />
                   </button>
                   <button type="button" class="social-icon-btn" data-social="facebook" title="Share on Facebook" aria-label="Share on Facebook">
-                    <img src="assets/social-facebook.png" alt="Facebook" />
+                    <img src="assets/social-facebook.png" alt="Facebook" width="24" height="24" />
                   </button>
                   <button type="button" class="social-icon-btn" data-social="telegram" title="Share on Telegram" aria-label="Share on Telegram">
-                    <img src="assets/social-telegram.png" alt="Telegram" />
+                    <img src="assets/social-telegram.png" alt="Telegram" width="24" height="24" />
                   </button>
                   <button type="button" class="social-icon-btn" data-social="reddit" title="Share on Reddit" aria-label="Share on Reddit">
-                    <img src="assets/social-reddit.png" alt="Reddit" />
+                    <img src="assets/social-reddit.png" alt="Reddit" width="24" height="24" />
                   </button>
                   <button type="button" class="social-icon-btn" data-social="discord" title="Copy for Discord" aria-label="Copy for Discord">
-                    <img src="assets/social-discord.png" alt="Discord" />
+                    <img src="assets/social-discord.png" alt="Discord" width="24" height="24" />
                   </button>
                 </div>
                 <button type="button" id="activeDownloadQrBtn" class="btn btn-dark btn-sm stroke-btn">Save QR</button>
@@ -718,10 +813,10 @@
           <div class="card-header-row compact">
             <!-- ICON SLOT: Saved Polls Icon -->
             <div class="icon-slot icon-slot-md" data-icon-slot="saved-polls">
-              <img src="assets/icon-poll.png" alt="Saved Polls" class="slot-img" />
+              <img src="assets/icon-poll.png" alt="Saved Polls" width="40" height="40" class="slot-img" />
             </div>
             <div>
-              <h1 id="savedHeading" class="card-title stroke-heading">My Polls</h1>
+              <h2 id="savedHeading" class="card-title stroke-heading">My Polls</h2>
             </div>
           </div>
           <button type="button" id="savedBackBtn" class="btn btn-gold stroke-btn">+ New Poll</button>
@@ -736,10 +831,10 @@
       <div class="page-narrow">
         <div class="glass-card page-banner donate-hero-banner">
           <div class="icon-slot icon-slot-xl" data-icon-slot="donate-hero">
-            <img src="assets/icon-donate.png" alt="Donate" class="slot-img" />
+            <img src="assets/icon-donate.png" alt="Donate to QuickPoll" width="60" height="60" class="slot-img" />
           </div>
           <div class="banner-text-grow">
-            <h1 id="donateHeading" class="page-title stroke-display">Donations</h1>
+            <h2 id="donateHeading" class="page-title stroke-display">Donations</h2>
             <p class="card-desc stroke-body">20% of every donation goes directly to helping the homeless.</p>
           </div>
           <span class="pledge-badge stroke-btn">20% Pledge</span>
@@ -747,7 +842,7 @@
 
         <div class="donate-grid">
           <article class="glass-card donate-info-card">
-            <h2 class="card-title stroke-heading">Where Your Donation Goes</h2>
+            <h3 class="card-title stroke-heading">Where Your Donation Goes</h3>
             <p class="stroke-body">
               Donations help keep QuickPoll online and free for everyone. At the same time, we give 20% of every single donation straight back to people experiencing homelessness.
             </p>
@@ -764,7 +859,7 @@
           </article>
 
           <article class="glass-card donate-calc-card">
-            <h2 class="card-title stroke-heading">Live 20% Impact Preview</h2>
+            <h3 class="card-title stroke-heading">Live 20% Impact Preview</h3>
             <div id="donatePresetRow" class="preset-pills" role="group" aria-label="Donation amounts">
               <button type="button" class="preset-pill stroke-btn" data-amount="5">£5</button>
               <button type="button" class="preset-pill stroke-btn active" data-amount="10">£10</button>
@@ -799,7 +894,7 @@
               class="btn btn-donate-green btn-lg stroke-btn"
             >
               <span class="icon-slot icon-slot-donate-btn" data-icon-slot="donate-cta">
-                <img src="assets/icon-donate.png" alt="" class="slot-img" />
+                <img src="assets/icon-donate.png" alt="Donate Icon" width="38" height="38" class="slot-img" />
               </span>
               <span class="donate-btn-text-group">
                 <span class="donate-btn-title stroke-btn">Donate Now</span>
@@ -812,10 +907,10 @@
         <div class="glass-card donate-videos-card">
           <div class="card-header-row">
             <div class="icon-slot icon-slot-md" data-icon-slot="donate-videos">
-              <img src="assets/icon-share.png" alt="Monthly Videos" class="slot-img" />
+              <img src="assets/icon-share.png" alt="Monthly Outreach Videos" width="40" height="40" class="slot-img" />
             </div>
             <div class="header-title-block">
-              <h2 class="card-title stroke-heading">End of Month Video Uploads</h2>
+              <h3 class="card-title stroke-heading">End of Month Video Uploads</h3>
               <p class="card-desc stroke-body">
                 At the end of each month, we upload videos here showing us giving food, drinks, and essentials to homeless people.
               </p>
@@ -825,14 +920,14 @@
           <div id="donateVideosGrid" class="donate-videos-grid">
             <div class="video-slot-card">
               <span class="video-status-pill stroke-subtle">Uploading End of Month</span>
-              <h3 class="saved-item-question stroke-heading">Monthly Outreach Video</h3>
+              <h4 class="saved-item-question stroke-heading">Monthly Outreach Video</h4>
               <p class="card-desc stroke-body">
                 Video proof of food and supplies handed out from this month's 20% donation fund will appear here at the end of the month.
               </p>
             </div>
             <div class="video-slot-card">
               <span class="video-status-pill stroke-subtle">Community Food &amp; Essentials</span>
-              <h3 class="saved-item-question stroke-heading">Next Drop Slot</h3>
+              <h4 class="saved-item-question stroke-heading">Next Drop Slot</h4>
               <p class="card-desc stroke-body">
                 Every monthly video upload includes receipts and footage showing donations reaching people directly.
               </p>
@@ -846,28 +941,28 @@
 
   <footer class="site-footer">
     <div class="footer-donate-wrap">
-      <button type="button" id="footerDonateBtn" class="btn btn-donate-green btn-lg stroke-btn" data-page="donate">
+      <a href="#donate" id="footerDonateBtn" class="btn btn-donate-green btn-lg stroke-btn" data-page="donate">
         <span class="icon-slot icon-slot-donate-btn" data-icon-slot="donate-footer">
-          <img src="assets/icon-donate.png" alt="Donate" class="slot-img" />
+          <img src="assets/icon-donate.png" alt="Donate" width="38" height="38" class="slot-img" />
         </span>
         <span class="donate-btn-text-group">
           <span class="donate-btn-title stroke-btn">Donate</span>
           <span class="donate-btn-sub stroke-subtle">20% Helps the Homeless</span>
         </span>
-      </button>
+      </a>
     </div>
 
-    <div class="footer-links">
-      <button type="button" class="footer-nav-link stroke-subtle" data-page="create">Create Poll</button>
-      <button type="button" class="footer-nav-link stroke-subtle" data-page="templates">Templates</button>
-      <button type="button" class="footer-nav-link stroke-subtle" data-page="how-to-use">How to Use</button>
-      <button type="button" class="footer-nav-link stroke-subtle" data-page="qa">Q&amp;A</button>
-      <button type="button" class="footer-nav-link stroke-subtle" data-page="privacy">Privacy</button>
-      <button type="button" class="footer-nav-link stroke-subtle" data-page="donate">Donate</button>
-    </div>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="#create" class="footer-nav-link stroke-subtle" data-page="create">Create Poll</a>
+      <a href="#templates" class="footer-nav-link stroke-subtle" data-page="templates">Templates</a>
+      <a href="#how-to-use" class="footer-nav-link stroke-subtle" data-page="how-to-use">How to Use</a>
+      <a href="#qa" class="footer-nav-link stroke-subtle" data-page="qa">Q&amp;A</a>
+      <a href="#privacy" class="footer-nav-link stroke-subtle" data-page="privacy">Privacy</a>
+      <a href="#donate" class="footer-nav-link stroke-subtle" data-page="donate">Donate</a>
+    </nav>
   </footer>
 
-  <script src="vendor-qr.js?v=20261128"></script>
-  <script src="app.js?v=20261128"></script>
+  <script src="vendor-qr.js?v=20261129"></script>
+  <script src="app.js?v=20261129"></script>
 </body>
 </html>

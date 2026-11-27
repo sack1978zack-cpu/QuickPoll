@@ -496,8 +496,8 @@
 
   const PAGE_META = {
     create: {
-      title: 'QuickPoll | Create Poll',
-      desc: 'Create polls with custom expiration timers, QR codes, and shareable links.',
+      title: 'QuickPoll | Free Online Poll Maker With Timers & QR Codes',
+      desc: 'Create free online polls in seconds with custom countdown timers, QR codes, instant social sharing, and live results. No signup needed.',
     },
     templates: {
       title: 'QuickPoll | Poll Templates',
@@ -534,6 +534,10 @@
     document.title = customTitle || meta.title;
     const descTag = document.querySelector('meta[name="description"]');
     if (descTag) descTag.setAttribute('content', meta.desc);
+    const canonicalTag = document.getElementById('canonicalLink');
+    if (canonicalTag && window.location.protocol !== 'file:') {
+      canonicalTag.setAttribute('href', `${window.location.origin}${window.location.pathname}`);
+    }
   }
 
   function navigateToPage(pageName, updateHash = true) {
@@ -1552,15 +1556,15 @@
       navigateToPage('create');
     });
 
-    el.navCreateBtn.addEventListener('click', () => navigateToPage('create'));
-    el.navTemplatesBtn.addEventListener('click', () => navigateToPage('templates'));
+    el.navCreateBtn.addEventListener('click', (e) => { e.preventDefault(); navigateToPage('create'); });
+    el.navTemplatesBtn.addEventListener('click', (e) => { e.preventDefault(); navigateToPage('templates'); });
     el.quickTemplatesLink.addEventListener('click', () => navigateToPage('templates'));
-    el.navHowToBtn.addEventListener('click', () => navigateToPage('how-to-use'));
-    el.navQaBtn.addEventListener('click', () => navigateToPage('qa'));
-    el.navPrivacyBtn.addEventListener('click', () => navigateToPage('privacy'));
-    el.navDonateBtn.addEventListener('click', () => navigateToPage('donate'));
-    el.footerDonateBtn.addEventListener('click', () => navigateToPage('donate'));
-    el.navSavedBtn.addEventListener('click', () => navigateToPage('saved'));
+    el.navHowToBtn.addEventListener('click', (e) => { e.preventDefault(); navigateToPage('how-to-use'); });
+    el.navQaBtn.addEventListener('click', (e) => { e.preventDefault(); navigateToPage('qa'); });
+    el.navPrivacyBtn.addEventListener('click', (e) => { e.preventDefault(); navigateToPage('privacy'); });
+    el.navDonateBtn.addEventListener('click', (e) => { e.preventDefault(); navigateToPage('donate'); });
+    el.footerDonateBtn.addEventListener('click', (e) => { e.preventDefault(); navigateToPage('donate'); });
+    el.navSavedBtn.addEventListener('click', (e) => { e.preventDefault(); navigateToPage('saved'); });
     el.savedBackBtn.addEventListener('click', () => navigateToPage('create'));
     el.backToBuilderBtn.addEventListener('click', () => navigateToPage('create'));
 
@@ -1612,7 +1616,8 @@
     el.closeDrawerBtn.addEventListener('click', closeDrawer);
     el.mobileNavBackdrop.addEventListener('click', closeDrawer);
     el.drawerNavBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         navigateToPage(btn.dataset.page || 'create');
       });
     });
@@ -1626,7 +1631,8 @@
     });
 
     el.footerNavLinks.forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         navigateToPage(btn.dataset.page || 'create');
       });
     });

@@ -1,0 +1,16 @@
+{
+  "name": "QuickPoll",
+  "short_name": "QuickPoll",
+  "description": "Create free online polls with custom expiration timers, QR codes, and shareable links.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#040407",
+  "theme_color": "#040407",
+  "icons": [
+    {
+      "src": "assets/logo.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}
