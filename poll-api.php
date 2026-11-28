@@ -19,8 +19,12 @@ if (!file_exists($htaccessPath)) {
 }
 
 $rateDir = $dataDir . '/.rate';
+$banDir = $dataDir . '/.bans';
 if (!is_dir($rateDir)) {
     @mkdir($rateDir, 0750, true);
+}
+if (!is_dir($banDir)) {
+    @mkdir($banDir, 0750, true);
 }
 
 function respond(int $status, array $payload): void {
@@ -33,13 +37,140 @@ function validId(string $id): bool {
     return (bool) preg_match('/^qp_[a-zA-Z0-9]{6,24}$/', $id);
 }
 
+function getApiSecret(string $dataDir): string {
+    $secretFile = $dataDir . '/.secret';
+    if (is_file($secretFile)) {
+        $existing = trim((string) @file_get_contents($secretFile));
+        if (strlen($existing) >= 32) {
+            return $existing;
+        }
+    }
+    $secret = bin2hex(random_bytes(32));
+    @file_put_contents($secretFile, $secret, LOCK_EX);
+    @chmod($secretFile, 0640);
+    return $secret;
+}
+
 function clientIpHash(): string {
     $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
     return hash('sha256', $ip . '|' . __DIR__);
 }
 
-function enforceRateLimit(string $rateDir, string $bucket, int $maxHits, int $windowSec): void {
-    $file = $rateDir . '/' . $bucket . '_' . clientIpHash() . '.json';
+function isIpBanned(string $banDir): bool {
+    $banFile = $banDir . '/' . clientIpHash() . '.json';
+    if (!is_file($banFile)) {
+        return false;
+    }
+    $data = json_decode((string) @file_get_contents($banFile), true);
+    if (!is_array($data)) {
+        return false;
+    }
+    $until = (int) ($data['until'] ?? 0);
+    if ($until > time()) {
+        return true;
+    }
+    @unlink($banFile);
+    return false;
+}
+
+function recordStrike(string $banDir, string $rateDir): void {
+    $strikeFile = $rateDir . '/strike_' . clientIpHash() . '.json';
+    $now = time();
+    $fp = @fopen($strikeFile, 'c+');
+    if (!$fp) {
+        return;
+    }
+    flock($fp, LOCK_EX);
+    $raw = stream_get_contents($fp);
+    $hits = json_decode($raw ?: '[]', true);
+    if (!is_array($hits)) {
+        $hits = [];
+    }
+    $cutoff = $now - 600;
+    $hits = array_values(array_filter($hits, static fn($t) => is_int($t) && $t > $cutoff));
+    $hits[] = $now;
+    ftruncate($fp, 0);
+    rewind($fp);
+    fwrite($fp, json_encode($hits));
+    fflush($fp);
+    flock($fp, LOCK_UN);
+    fclose($fp);
+
+    if (count($hits) >= 5) {
+        $banFile = $banDir . '/' . clientIpHash() . '.json';
+        @file_put_contents($banFile, json_encode(['until' => $now + 1800]), LOCK_EX);
+    }
+}
+
+function proxyRiskScore(): int {
+    $score = 0;
+    if (!empty($_SERVER['HTTP_PROXY_CONNECTION']) || !empty($_SERVER['HTTP_X_PROXY_ID'])) {
+        $score += 2;
+    }
+    if (!empty($_SERVER['HTTP_VIA']) || !empty($_SERVER['HTTP_FORWARDED'])) {
+        $score += 1;
+    }
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $score += 1;
+    }
+    $xff = (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '');
+    if ($xff !== '') {
+        $hops = array_filter(array_map('trim', explode(',', $xff)));
+        if (count($hops) >= 2) {
+            $score += 1;
+        }
+    }
+    return $score;
+}
+
+function verifySameHostOrigin(): void {
+    $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+    if ($host === '') {
+        return;
+    }
+    $origin = (string) ($_SERVER['HTTP_ORIGIN'] ?? '');
+    if ($origin !== '') {
+        $originHost = strtolower((string) parse_url($origin, PHP_URL_HOST));
+        $originPort = parse_url($origin, PHP_URL_PORT);
+        $hostOnly = strtolower(explode(':', $host)[0]);
+        if ($originHost !== '' && $originHost !== $hostOnly && ($originPort ? "{$originHost}:{$originPort}" : $originHost) !== $host) {
+            respond(403, ['ok' => false, 'error' => 'Origin not permitted']);
+        }
+    }
+}
+
+function verifyRequestToken(string $dataDir, string $banDir, string $rateDir): void {
+    $token = (string) ($_SERVER['HTTP_X_QP_TOKEN'] ?? '');
+    $tsStr = (string) ($_SERVER['HTTP_X_QP_TS'] ?? '');
+    $nonce = (string) ($_SERVER['HTTP_X_QP_NONCE'] ?? '');
+
+    if ($token === '' || $tsStr === '' || $nonce === '' || !ctype_digit($tsStr) || strlen($nonce) > 32) {
+        recordStrike($banDir, $rateDir);
+        respond(401, ['ok' => false, 'code' => 'stale_token', 'error' => 'Security challenge required']);
+    }
+
+    $ts = (int) $tsStr;
+    $now = time();
+    if (abs($now - $ts) > 1800) {
+        respond(401, ['ok' => false, 'code' => 'stale_token', 'error' => 'Security token expired']);
+    }
+
+    $secret = getApiSecret($dataDir);
+    $expected = hash_hmac('sha256', $ts . '|' . clientIpHash(), $secret);
+    if (!hash_equals($expected, $token)) {
+        respond(401, ['ok' => false, 'code' => 'stale_token', 'error' => 'Invalid security token']);
+    }
+
+    $powHash = hash('sha256', $token . ':' . $ts . ':' . $nonce);
+    if (substr($powHash, 0, 2) !== '00') {
+        recordStrike($banDir, $rateDir);
+        respond(403, ['ok' => false, 'error' => 'Invalid proof token']);
+    }
+}
+
+function enforceRateLimit(string $rateDir, string $banDir, string $bucket, int $maxHits, int $windowSec, bool $global = false): void {
+    $suffix = $global ? 'global' : clientIpHash();
+    $file = $rateDir . '/' . $bucket . '_' . $suffix . '.json';
     $now = time();
     $fp = @fopen($file, 'c+');
     if (!$fp) {
@@ -56,6 +187,9 @@ function enforceRateLimit(string $rateDir, string $bucket, int $maxHits, int $wi
     if (count($hits) >= $maxHits) {
         flock($fp, LOCK_UN);
         fclose($fp);
+        if (!$global) {
+            recordStrike($banDir, $rateDir);
+        }
         respond(429, ['ok' => false, 'error' => 'Rate limit exceeded. Please wait a moment.']);
     }
     $hits[] = $now;
@@ -83,6 +217,10 @@ function readJsonBodyLimited(int $maxBytes = 16384): array {
     return $decoded;
 }
 
+if (isIpBanned($banDir)) {
+    respond(403, ['ok' => false, 'error' => 'Access temporarily blocked by firewall.']);
+}
+
 $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
 $action = (string) ($_GET['action'] ?? '');
 
@@ -94,7 +232,16 @@ if ($action === 'ping') {
     if (!in_array($method, ['GET', 'HEAD'], true)) {
         respond(405, ['ok' => false, 'error' => 'Method not allowed']);
     }
-    respond(200, ['ok' => true, 'mode' => 'server']);
+    $ts = time();
+    $secret = getApiSecret($dataDir);
+    $token = hash_hmac('sha256', $ts . '|' . clientIpHash(), $secret);
+    respond(200, [
+        'ok' => true,
+        'mode' => 'server',
+        'token' => $token,
+        'ts' => $ts,
+        'diff' => 2,
+    ]);
 }
 
 if ($action === 'get') {
@@ -129,10 +276,15 @@ if ($method !== 'POST') {
     respond(405, ['ok' => false, 'error' => 'Method not allowed']);
 }
 
+verifySameHostOrigin();
+verifyRequestToken($dataDir, $banDir, $rateDir);
+
+$risk = proxyRiskScore();
 $body = readJsonBodyLimited(16384);
 
 if ($action === 'create') {
-    enforceRateLimit($rateDir, 'create', 20, 600);
+    enforceRateLimit($rateDir, $banDir, 'create_global', 150, 600, true);
+    enforceRateLimit($rateDir, $banDir, 'create', $risk > 0 ? 3 : 15, 600, false);
 
     $question = trim((string) ($body['q'] ?? ''));
     $rawOpts = $body['opts'] ?? [];
@@ -192,7 +344,7 @@ if ($action === 'create') {
 }
 
 if ($action === 'vote') {
-    enforceRateLimit($rateDir, 'vote', 60, 600);
+    enforceRateLimit($rateDir, $banDir, 'vote', $risk > 0 ? 12 : 60, 600, false);
 
     $id = (string) ($body['id'] ?? '');
     $choices = $body['choices'] ?? [];

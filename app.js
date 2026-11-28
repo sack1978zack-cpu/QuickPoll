@@ -103,6 +103,9 @@
 
   const state = {
     serverMode: false,
+    apiToken: '',
+    apiTs: 0,
+    apiPowDiff: 2,
     currentPage: 'create',
     activeTemplateFilter: 'all',
     builder: {
@@ -469,8 +472,96 @@
   }
 
   /* ========================================================================
-     Backend Probe
+     Backend Probe & Firewall Security Challenge
      ======================================================================== */
+
+  function sha256HexSync(ascii) {
+    const rightRotate = (value, amount) => (value >>> amount) | (value << (32 - amount));
+    const maxWord = Math.pow(2, 32);
+    const words = [];
+    const asciiBitLength = ascii.length * 8;
+    const hash = [];
+    const k = [];
+    let primeCounter = 0;
+    const isComposite = {};
+
+    for (let candidate = 2; primeCounter < 64; candidate++) {
+      if (!isComposite[candidate]) {
+        for (let i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+        hash[primeCounter] = (Math.pow(candidate, 0.5) * maxWord) | 0;
+        k[primeCounter++] = (Math.pow(candidate, 1 / 3) * maxWord) | 0;
+      }
+    }
+
+    ascii += '\x80';
+    while ((ascii.length % 64) - 56) ascii += '\x00';
+    for (let i = 0; i < ascii.length; i++) {
+      const j = ascii.charCodeAt(i);
+      words[i >> 2] |= j << (((3 - i) % 4) * 8);
+    }
+    words[words.length] = (asciiBitLength / maxWord) | 0;
+    words[words.length] = asciiBitLength;
+
+    for (let j = 0; j < words.length;) {
+      const w = words.slice(j, (j += 16));
+      const oldHash = hash.slice(0);
+      for (let i = 0; i < 64; i++) {
+        const w15 = w[i - 15];
+        const w2 = w[i - 2];
+        const a = hash[0];
+        const e = hash[4];
+        const temp1 =
+          hash[7] +
+          (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) +
+          ((e & hash[5]) ^ (~e & hash[6])) +
+          k[i] +
+          (w[i] =
+            i < 16
+              ? w[i]
+              : (w[i - 16] +
+                  (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) +
+                  w[i - 7] +
+                  (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) |
+                0);
+        const temp2 =
+          (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) +
+          ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+        hash.unshift((temp1 + temp2) | 0);
+        hash.pop();
+        hash[4] = (hash[4] + temp1) | 0;
+      }
+      for (let i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+    }
+
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      for (let j = 3; j >= 0; j--) {
+        const b = (hash[i] >> (j * 8)) & 255;
+        result += (b < 16 ? '0' : '') + b.toString(16);
+      }
+    }
+    return result;
+  }
+
+  async function sha256Hex(str) {
+    if (window.crypto && window.crypto.subtle && typeof TextEncoder !== 'undefined') {
+      const buf = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+    return sha256HexSync(str);
+  }
+
+  async function solveApiProof(token, ts, diff) {
+    const prefix = '0'.repeat(Math.max(1, Number(diff) || 2));
+    for (let n = 0; n < 20000; n++) {
+      const nonce = n.toString(36);
+      const digest = await sha256Hex(`${token}:${ts}:${nonce}`);
+      if (digest.startsWith(prefix)) return nonce;
+    }
+    return '0';
+  }
 
   async function detectBackend() {
     if (window.location.protocol === 'file:' || window.QUICKPOLL_ASSET_DATA) {
@@ -484,6 +575,9 @@
         const data = await res.json();
         if (data && data.ok) {
           state.serverMode = true;
+          state.apiToken = data.token || '';
+          state.apiTs = Number(data.ts || 0);
+          state.apiPowDiff = Number(data.diff || 2);
           return;
         }
       }
@@ -491,6 +585,34 @@
       // Fallback silently
     }
     state.serverMode = false;
+  }
+
+  async function secureApiPost(action, payload) {
+    if (!state.apiToken || !state.apiTs) {
+      await detectBackend();
+    }
+    const attempt = async () => {
+      const nonce = state.apiToken ? await solveApiProof(state.apiToken, state.apiTs, state.apiPowDiff) : '';
+      return fetch(`poll-api.php?action=${encodeURIComponent(action)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-QP-Token': state.apiToken || '',
+          'X-QP-Ts': String(state.apiTs || 0),
+          'X-QP-Nonce': nonce,
+        },
+        body: JSON.stringify(payload),
+      });
+    };
+
+    let res = await attempt();
+    if (res.status === 401) {
+      await detectBackend();
+      if (state.apiToken) {
+        res = await attempt();
+      }
+    }
+    return res;
   }
 
   /* ========================================================================
@@ -930,11 +1052,7 @@
 
     if (state.serverMode) {
       try {
-        const res = await fetch('poll-api.php?action=create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(poll),
-        });
+        const res = await secureApiPost('create', poll);
         const data = await res.json();
         if (res.ok && data && data.ok && data.id) {
           poll.id = data.id;
@@ -1167,11 +1285,7 @@
 
     if (state.serverMode && !poll._fromUrlPayload) {
       try {
-        const res = await fetch('poll-api.php?action=vote', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: poll.id, choices: state.activeSelectedIndexes }),
-        });
+        const res = await secureApiPost('vote', { id: poll.id, choices: state.activeSelectedIndexes });
         const data = await res.json();
         if (res.ok && data && data.ok && data.poll) {
           poll.votes = data.poll.votes;
@@ -1889,11 +2003,7 @@
           let shareUrl = buildShareUrl(poll, false);
           if (state.serverMode) {
             try {
-              const res = await fetch('poll-api.php?action=create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(poll),
-              });
+              const res = await secureApiPost('create', poll);
               const data = await res.json();
               if (res.ok && data && data.ok && data.id) {
                 poll.id = data.id;

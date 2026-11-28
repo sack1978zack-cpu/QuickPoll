@@ -9,11 +9,29 @@ Options -Indexes
   AddType application/json .json
 </IfModule>
 
+# Mitigate Httpoxy proxy header injection
+<IfModule mod_headers.c>
+  RequestHeader unset Proxy early
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Block dangerous HTTP methods
+  RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|DELETE|PUT|CONNECT)$ [NC]
+  RewriteRule ^ - [F,L]
+
   # Block sensitive internal directories
   RewriteRule ^(polls-data|\.backups|\.git)(/|$) - [F,L]
+
+  # Block known exploit & vulnerability scanner User-Agents -> animated clown decoy
+  RewriteCond %{HTTP_USER_AGENT} (sqlmap|nikto|nmap|masscan|zgrab|gobuster|dirbuster|feroxbuster|ffuf|nuclei|wpscan|acunetix|nessus|hydra|havij|openvas|arachni|w3af|skipfish|netsparker|burpcollaborator) [NC]
+  RewriteRule ^ nice-try.html [L]
+
+  # Block raw automated proxy/bot HTTP clients from hammering poll-api.php directly
+  RewriteCond %{REQUEST_URI} ^/poll-api\.php$ [NC]
+  RewriteCond %{HTTP_USER_AGENT} (^$|curl/|wget/|python-requests|python-urllib|libwww-perl|go-http-client|scrapy|guzzlehttp|aiohttp) [NC]
+  RewriteRule ^ - [F,L]
 
   # Block unused WordPress, admin, and common exploit probe paths -> animated clown decoy (4.5s -> Rick Astley)
   RewriteRule ^(wp-admin|wp-content|wp-includes|wordpress|phpmyadmin|pma|adminer|administrator|cgi-bin|vendor)(/|$) nice-try.html [L,NC]
