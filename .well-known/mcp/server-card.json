@@ -1,0 +1,80 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-card/sep-1649.json",
+  "version": "1.0.0",
+  "protocolVersion": "2025-03-26",
+  "serverInfo": {
+    "name": "quickpoll-mcp",
+    "title": "QuickPoll Server",
+    "version": "1.0.0",
+    "description": "Create and query QuickPoll polls with custom expiration timers and live vote tallies."
+  },
+  "websiteUrl": "https://quickpollnow.com/",
+  "documentationUrl": "https://quickpollnow.com/llms.txt",
+  "transport": {
+    "type": "http",
+    "endpoint": "https://quickpollnow.com/poll-api.php"
+  },
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    },
+    "resources": {
+      "subscribe": false,
+      "listChanged": false
+    }
+  },
+  "tools": [
+    {
+      "name": "create_poll",
+      "description": "Create a new QuickPoll with a question, 2 to 8 answer options, and an expiration timestamp.",
+      "endpoint": "https://quickpollnow.com/poll-api.php?action=create",
+      "method": "POST",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "q": { "type": "string", "minLength": 1, "maxLength": 180 },
+          "opts": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 8,
+            "items": { "type": "string", "minLength": 1, "maxLength": 90 }
+          },
+          "multi": { "type": "boolean" },
+          "expiresAt": { "type": "integer", "description": "Unix timestamp in milliseconds in the future" }
+        },
+        "required": ["q", "opts", "expiresAt"]
+      }
+    },
+    {
+      "name": "get_poll",
+      "description": "Retrieve a poll question, options, expiration time, and vote totals by poll ID.",
+      "endpoint": "https://quickpollnow.com/poll-api.php?action=get",
+      "method": "GET",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "pattern": "^qp_[a-zA-Z0-9]{6,24}$" }
+        },
+        "required": ["id"]
+      }
+    },
+    {
+      "name": "vote_poll",
+      "description": "Cast one or more option index votes on an active QuickPoll.",
+      "endpoint": "https://quickpollnow.com/poll-api.php?action=vote",
+      "method": "POST",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "pattern": "^qp_[a-zA-Z0-9]{6,24}$" },
+          "choices": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "required": ["id", "choices"]
+      }
+    }
+  ]
+}
