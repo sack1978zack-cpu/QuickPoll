@@ -157,6 +157,9 @@
     pollView: document.getElementById('pollView'),
     savedView: document.getElementById('savedView'),
     donateView: document.getElementById('donateView'),
+    aboutView: document.getElementById('aboutView'),
+    contactView: document.getElementById('contactView'),
+    termsView: document.getElementById('termsView'),
 
     templateFilterBar: document.getElementById('templateFilterBar'),
     templatesGrid: document.getElementById('templatesGrid'),
@@ -519,6 +522,18 @@
       title: 'QuickPoll | Donations & 20% Homeless Pledge',
       desc: 'Support QuickPoll where 20% of donations go toward food and essentials for homeless people.',
     },
+    about: {
+      title: 'QuickPoll | About',
+      desc: 'Learn about QuickPoll, fast account free polling, and our 20% homeless aid pledge.',
+    },
+    contact: {
+      title: 'QuickPoll | Contact',
+      desc: 'Contact QuickPoll support at contact@quickpollnow.com.',
+    },
+    terms: {
+      title: 'QuickPoll | Terms of Use',
+      desc: 'Read QuickPoll terms of use for creating and sharing online polls.',
+    },
     saved: {
       title: 'QuickPoll | My Polls',
       desc: 'View, reopen, copy, and manage your saved polls.',
@@ -554,6 +569,9 @@
     el.pollView.classList.toggle('active', pageName === 'poll');
     el.savedView.classList.toggle('active', pageName === 'saved');
     el.donateView.classList.toggle('active', pageName === 'donate');
+    el.aboutView.classList.toggle('active', pageName === 'about');
+    el.contactView.classList.toggle('active', pageName === 'contact');
+    el.termsView.classList.toggle('active', pageName === 'terms');
 
     el.navCreateBtn.classList.toggle('active', pageName === 'create');
     el.navTemplatesBtn.classList.toggle('active', pageName === 'templates');
@@ -1538,7 +1556,7 @@
     }
 
     const hashPage = window.location.hash.replace('#', '');
-    if (['create', 'templates', 'how-to-use', 'qa', 'privacy', 'donate', 'saved'].includes(hashPage)) {
+    if (['create', 'templates', 'how-to-use', 'qa', 'privacy', 'donate', 'about', 'contact', 'terms', 'saved'].includes(hashPage)) {
       navigateToPage(hashPage, false);
       return true;
     }
@@ -1631,9 +1649,10 @@
     });
 
     el.footerNavLinks.forEach((btn) => {
+      if (!btn.dataset.page) return;
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        navigateToPage(btn.dataset.page || 'create');
+        navigateToPage(btn.dataset.page);
       });
     });
 
@@ -1822,6 +1841,101 @@
     syncHeaderScroll();
   }
 
+  function registerWebMcpTools() {
+    if (typeof navigator === 'undefined' || !navigator.modelContext || typeof navigator.modelContext.registerTool !== 'function') {
+      return;
+    }
+
+    try {
+      navigator.modelContext.registerTool({
+        name: 'create_poll',
+        description: 'Create a QuickPoll with a question, 2 to 8 answer options, and an expiration duration in minutes.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            question: { type: 'string', description: 'Poll question up to 180 characters' },
+            options: {
+              type: 'array',
+              items: { type: 'string' },
+              minItems: 2,
+              maxItems: 8,
+              description: 'List of 2 to 8 answer choices',
+            },
+            expiryMinutes: { type: 'number', description: 'Duration in minutes before poll expires (default 1440)' },
+            multiChoice: { type: 'boolean', description: 'Allow selecting multiple options' },
+          },
+          required: ['question', 'options'],
+        },
+        execute: async (args) => {
+          const q = String((args && args.question) || '').trim();
+          const opts = Array.isArray(args && args.options)
+            ? args.options.map((o) => String(o || '').trim()).filter(Boolean).slice(0, 8)
+            : [];
+          if (!q || opts.length < 2) {
+            return { ok: false, error: 'Provide a question and at least 2 options.' };
+          }
+          const mins = Math.max(1, Number((args && args.expiryMinutes) || 1440));
+          const nowMs = Date.now();
+          const poll = {
+            id: generateId(),
+            q,
+            opts,
+            multi: Boolean(args && args.multiChoice),
+            theme: state.builder.theme || 'sovereign',
+            icon: state.builder.icon || 'assets/icon-vote.png',
+            createdAt: nowMs,
+            expiresAt: nowMs + mins * 60 * 1000,
+          };
+          let shareUrl = buildShareUrl(poll, false);
+          if (state.serverMode) {
+            try {
+              const res = await fetch('poll-api.php?action=create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(poll),
+              });
+              const data = await res.json();
+              if (res.ok && data && data.ok && data.id) {
+                poll.id = data.id;
+                shareUrl = buildShareUrl(poll, true);
+              }
+            } catch {
+              // fallback to static payload link
+            }
+          }
+          poll.shareUrl = shareUrl;
+          savePollRecord(poll);
+          return { ok: true, id: poll.id, shareUrl, expiresAt: poll.expiresAt };
+        },
+      });
+
+      navigator.modelContext.registerTool({
+        name: 'list_poll_templates',
+        description: 'Return QuickPoll starter templates optionally filtered by category (friends, food, gaming, work).',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            category: { type: 'string', description: 'Optional category filter' },
+          },
+        },
+        execute: async (args) => {
+          const cat = String((args && args.category) || 'all').toLowerCase();
+          const templates = POLL_TEMPLATES.filter((t) => cat === 'all' || t.category === cat);
+          return { ok: true, templates };
+        },
+      });
+
+      navigator.modelContext.registerTool({
+        name: 'get_saved_polls',
+        description: 'List polls previously created and saved in this browser.',
+        inputSchema: { type: 'object', properties: {} },
+        execute: async () => ({ ok: true, polls: getSavedPolls() }),
+      });
+    } catch {
+      // Ignore if browser modelContext rejects duplicate registration
+    }
+  }
+
   async function init() {
     el.customExpiryInput.min = toDatetimeLocalValue(Date.now() + 60 * 1000);
     updateSavedCountBadge();
@@ -1831,6 +1945,7 @@
     syncLivePreview();
     bindEvents();
     initGlassTiltAndShine();
+    registerWebMcpTools();
 
     await detectBackend();
     const routed = await loadRouteFromUrl();

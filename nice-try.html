@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Nice Try, Hacker | QuickPoll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="assets/icon-clown.png" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(245, 197, 66, 0.2), transparent 46%),
+        radial-gradient(circle at 80% 22%, rgba(124, 58, 237, 0.24), transparent 48%),
+        radial-gradient(circle at 50% 85%, rgba(220, 38, 38, 0.22), transparent 50%),
+        #040407;
+      color: #ffffff;
+      font-family: 'Fredoka', system-ui, sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      z-index: 5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .glass-card {
+      width: 100%;
+      max-width: 500px;
+      padding: 32px 26px;
+      border-radius: 14px;
+      text-align: center;
+      background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.12) 0%, rgba(0, 0, 0, 0.42) 100%),
+        rgba(10, 10, 18, 0.84);
+      border: 1.5px solid rgba(245, 197, 66, 0.5);
+      box-shadow:
+        0 26px 60px rgba(0, 0, 0, 0.88),
+        0 6px 0 #000000,
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.26);
+      backdrop-filter: blur(24px);
+    }
+
+    .clown-hero {
+      width: 128px;
+      height: 128px;
+      margin: 0 auto 14px;
+      display: block;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.85));
+      animation: clownDance 1.1s ease-in-out infinite alternate;
+    }
+
+    @keyframes clownDance {
+      0% { transform: translateY(0) rotate(-9deg) scale(1); }
+      50% { transform: translateY(-10px) rotate(6deg) scale(1.07); }
+      100% { transform: translateY(2px) rotate(-6deg) scale(1.02); }
+    }
+
+    .roaming-clown {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 82px;
+      height: 82px;
+      z-index: 3;
+      pointer-events: none;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.8));
+      will-change: transform;
+    }
+
+    .stroke-heading {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 5vw, 2.7rem);
+      font-weight: 700;
+      -webkit-text-stroke: 2px #000000;
+      paint-order: stroke fill;
+      text-shadow: 0 4px 0 #000000;
+    }
+
+    .sub-copy {
+      margin: 0 0 18px;
+      font-size: 1.08rem;
+      font-weight: 500;
+      -webkit-text-stroke: 1px #000000;
+      paint-order: stroke fill;
+    }
+
+    .timer-pill {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(220, 38, 38, 0.85);
+      border: 1.5px solid #fca5a5;
+      box-shadow: 0 3px 0 #000000;
+      font-size: 0.96rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      -webkit-text-stroke: 1px #000000;
+      paint-order: stroke fill;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .bar-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #ffe580, #f5c542, #ef4444, #a855f7);
+      transform-origin: left center;
+      animation: drainBar 4.5s linear forwards;
+    }
+
+    @keyframes drainBar {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    .fallback-link {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: 700;
+      background: linear-gradient(180deg, #ffe580 0%, #f5c542 54%, #a86f0e 100%);
+      border: 1.5px solid #ffe580;
+      box-shadow: 0 4px 0 #000000;
+      -webkit-text-stroke: 1.1px #000000;
+      paint-order: stroke fill;
+    }
+  </style>
+</head>
+<body>
+  <img src="assets/icon-clown.png" alt="Animated Clown" class="roaming-clown" id="roamingClownA" width="82" height="82" />
+  <img src="assets/icon-clown.png" alt="Animated Clown" class="roaming-clown" id="roamingClownB" width="82" height="82" />
+
+  <main class="stage">
+    <section class="glass-card" aria-labelledby="decoyHeading">
+      <img src="assets/icon-clown.png" alt="Nice Try Hacker Clown" class="clown-hero" width="128" height="128" />
+      <h1 id="decoyHeading" class="stroke-heading">Nice Try, Hacker</h1>
+      <p class="sub-copy">Wrong door. Enjoy your prize in <span id="secsLeft">4.5</span>s.</p>
+      <div class="timer-pill" id="timerPill">Redirecting soon...</div>
+      <div class="bar-track"><div class="bar-fill"></div></div>
+      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="fallback-link">Claim Prize Now</a>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const TARGET_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+      const DURATION_MS = 4500;
+      const start = performance.now();
+
+      const secsEl = document.getElementById('secsLeft');
+      const pillEl = document.getElementById('timerPill');
+
+      const clowns = [
+        { el: document.getElementById('roamingClownA'), x: 40, y: 60, vx: 4.4, vy: 3.3, rot: 0, vr: 4.2 },
+        { el: document.getElementById('roamingClownB'), x: Math.max(80, window.innerWidth - 140), y: Math.max(80, window.innerHeight - 140), vx: -3.9, vy: 3.7, rot: 25, vr: -5.1 },
+      ];
+
+      function tick(now) {
+        const elapsed = now - start;
+        const remaining = Math.max(0, (DURATION_MS - elapsed) / 1000);
+        secsEl.textContent = remaining.toFixed(1);
+        pillEl.textContent = remaining > 0 ? 'Sending you out in ' + Math.ceil(remaining) + '...' : 'See ya!';
+
+        const maxX = Math.max(20, window.innerWidth - 88);
+        const maxY = Math.max(20, window.innerHeight - 88);
+
+        clowns.forEach((c) => {
+          c.x += c.vx;
+          c.y += c.vy;
+          c.rot += c.vr;
+          if (c.x <= 6 || c.x >= maxX) {
+            c.vx *= -1;
+            c.x = Math.max(6, Math.min(maxX, c.x));
+          }
+          if (c.y <= 6 || c.y >= maxY) {
+            c.vy *= -1;
+            c.y = Math.max(6, Math.min(maxY, c.y));
+          }
+          c.el.style.transform = 'translate3d(' + c.x.toFixed(1) + 'px,' + c.y.toFixed(1) + 'px,0) rotate(' + (Math.sin(c.rot * 0.08) * 22).toFixed(1) + 'deg)';
+        });
+
+        if (elapsed >= DURATION_MS) {
+          window.location.replace(TARGET_URL);
+          return;
+        }
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+      setTimeout(() => {
+        window.location.replace(TARGET_URL);
+      }, DURATION_MS + 150);
+    })();
+  </script>
+</body>
+</html>

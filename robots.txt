@@ -4,7 +4,12 @@ Allow: /
 User-agent: Googlebot
 Allow: /
 Disallow: /polls-data/
+Disallow: /.backups/
 
 User-agent: *
+Content-Signal: search=yes, ai-train=no
 Allow: /
 Disallow: /polls-data/
+Disallow: /.backups/
+
+Sitemap: https://quickpollnow.com/sitemap.xml

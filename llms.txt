@@ -1,0 +1,22 @@
+# QuickPoll
+
+> Free online poll generator with custom expiration timers, scannable QR codes, ready made templates, and shareable links. 20% of donations go directly toward food and essentials for homeless people.
+
+## Core Pages
+
+- [Create Poll](https://quickpollnow.com/#create): Build a single or multiple choice poll with 2 to 8 answers, custom countdown timer, live preview, QR code, and social share links.
+- [Poll Templates](https://quickpollnow.com/#templates): One tap starter polls for friends, food, gaming, and work.
+- [How to Use](https://quickpollnow.com/#how-to-use): Four step guide to creating, expiring, sharing, and tracking polls.
+- [Questions & Answers](https://quickpollnow.com/#qa): Frequently asked questions about accounts, expiry timers, multiple picks, and duplicate vote protection.
+- [Donations](https://quickpollnow.com/#donate): Support QuickPoll where 20% of every donation funds food and supplies for homeless people with end of month video updates.
+- [About](https://quickpollnow.com/#about): Learn about QuickPoll and its community pledge.
+- [Contact](https://quickpollnow.com/#contact): Reach support at contact@quickpollnow.com.
+- [Privacy Policy](https://quickpollnow.com/#privacy): Storage, shared links, and Google AdSense cookie policy.
+- [Terms of Use](https://quickpollnow.com/#terms): Terms governing poll creation and voting on quickpollnow.com.
+
+## Machine Readable Endpoints
+
+- [Markdown Homepage](https://quickpollnow.com/index.md): Markdown representation of QuickPoll (also served on `/` when `Accept: text/markdown` is sent).
+- [MCP Server Card](https://quickpollnow.com/.well-known/mcp/server-card.json): SEP 1649 MCP server discovery card.
+- [Poll API](https://quickpollnow.com/poll-api.php): JSON endpoint supporting `ping`, `create`, `get`, and `vote`.
+- [Sitemap](https://quickpollnow.com/sitemap.xml): XML sitemap with recent lastmod timestamps.

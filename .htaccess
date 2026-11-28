@@ -1,28 +1,72 @@
 DirectoryIndex index.html
-
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteRule ^sitemap\.xml$ sitemap.php [L]
-</IfModule>
+Options -Indexes
 
 <IfModule mod_mime.c>
   AddType text/plain .txt
+  AddType text/markdown .md
   AddType application/manifest+json .webmanifest
   AddType application/xml .xml
+  AddType application/json .json
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Block sensitive internal directories
+  RewriteRule ^(polls-data|\.backups|\.git)(/|$) - [F,L]
+
+  # Block unused WordPress, admin, and common exploit probe paths -> animated clown decoy (4.5s -> Rick Astley)
+  RewriteRule ^(wp-admin|wp-content|wp-includes|wordpress|phpmyadmin|pma|adminer|administrator|cgi-bin|vendor)(/|$) nice-try.html [L,NC]
+  RewriteRule ^(wp-login\.php|wp-config\.php|xmlrpc\.php|\.env.*|config\.php|shell\.php|cmd\.php|eval\.php|eval-stdin\.php|c99\.php|r57\.php|wso\.php|setup\.php|install\.php|admin\.php|login\.php|upload\.php|db\.php|backup\.php)$ nice-try.html [L,NC]
+
+  # Catch any unknown PHP file probes (allow only poll-api.php and sitemap.php)
+  RewriteCond %{REQUEST_URI} \.php$ [NC]
+  RewriteCond %{REQUEST_URI} !^/(poll-api|sitemap)\.php$ [NC]
+  RewriteRule ^ nice-try.html [L]
+
+  # Catch obvious XSS / SQLi / path traversal query probes on non-API pages
+  RewriteCond %{REQUEST_URI} !^/poll-api\.php$ [NC]
+  RewriteCond %{QUERY_STRING} (<script|%3Cscript|union(\s|%20|\+)+select|base64_decode|\.\./\.\.|/etc/passwd) [NC]
+  RewriteRule ^ nice-try.html [L]
+
+  # Agent Markdown content negotiation on homepage
+  RewriteCond %{HTTP_ACCEPT} text/markdown [NC]
+  RewriteRule ^$ index.md [L,T=text/markdown;charset=utf-8]
+  RewriteCond %{HTTP_ACCEPT} text/markdown [NC]
+  RewriteRule ^index\.html$ index.md [L,T=text/markdown;charset=utf-8]
+
+  # Dynamic sitemap with fresh lastmod dates
+  RewriteRule ^sitemap\.xml$ sitemap.php [L]
 </IfModule>
 
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json application/xml image/svg+xml
+  AddOutputFilterByType DEFLATE text/html text/plain text/markdown text/css application/javascript application/json application/xml image/svg+xml
 </IfModule>
 
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
-  <FilesMatch "\.(html|css|js|php)$">
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Advertise agent resources via RFC 8288 Link headers on homepage
+  <Files "index.html">
+    Header add Link "</llms.txt>; rel=\"describedby\"; type=\"text/plain\""
+    Header add Link "</index.md>; rel=\"alternate\"; type=\"text/markdown\""
+    Header add Link "</.well-known/mcp/server-card.json>; rel=\"service-desc\"; type=\"application/json\""
+    Header merge Vary "Accept"
+  </Files>
+  <Files "index.md">
+    Header set Content-Type "text/markdown; charset=utf-8"
+    Header add Link "</llms.txt>; rel=\"describedby\"; type=\"text/plain\""
+    Header add Link "</.well-known/mcp/server-card.json>; rel=\"service-desc\"; type=\"application/json\""
+    Header merge Vary "Accept"
+  </Files>
+
+  <FilesMatch "\.(html|css|js|php|md)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
     Header set Expires "0"
   </FilesMatch>
-  <FilesMatch "^(ads|robots)\.txt$">
+  <FilesMatch "^(ads|robots|llms)\.txt$">
     Header set Cache-Control "public, max-age=300"
   </FilesMatch>
   <FilesMatch "\.(png|jpg|jpeg|webp|svg|ico)$">

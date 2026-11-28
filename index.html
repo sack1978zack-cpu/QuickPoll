@@ -9,24 +9,25 @@
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="theme-color" content="#040407" />
   <meta name="google-adsense-account" content="ca-pub-7516098019742511" />
-  <link rel="canonical" id="canonicalLink" href="./" />
+  <link rel="canonical" id="canonicalLink" href="https://quickpollnow.com/" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/logo.png" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://quickpollnow.com/" />
   <meta property="og:site_name" content="QuickPoll" />
   <meta property="og:locale" content="en_GB" />
   <meta property="og:title" content="QuickPoll | Free Online Poll Maker With Timers &amp; QR Codes" />
   <meta property="og:description" content="Create free online polls in seconds with custom countdown timers, QR codes, instant social sharing, and live results. No signup needed." />
-  <meta property="og:image" content="assets/logo.png" />
+  <meta property="og:image" content="https://quickpollnow.com/assets/logo.png" />
   <meta property="og:image:alt" content="QuickPoll Logo" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="QuickPoll | Free Online Poll Maker With Timers &amp; QR Codes" />
   <meta name="twitter:description" content="Create free online polls in seconds with custom countdown timers, QR codes, instant social sharing, and live results. No signup needed." />
-  <meta name="twitter:image" content="assets/logo.png" />
+  <meta name="twitter:image" content="https://quickpollnow.com/assets/logo.png" />
 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7516098019742511"
      crossorigin="anonymous"></script>
@@ -36,16 +37,95 @@
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "WebApplication",
+        "@type": "Organization",
+        "@id": "https://quickpollnow.com/#organization",
         "name": "QuickPoll",
+        "url": "https://quickpollnow.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://quickpollnow.com/assets/logo.png",
+          "width": 256,
+          "height": 256
+        },
+        "description": "Free instant online poll generator with expiration timers, QR codes, and a 20% homeless aid donation pledge.",
+        "email": "contact@quickpollnow.com",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "contact@quickpollnow.com",
+          "url": "https://quickpollnow.com/#contact",
+          "availableLanguage": ["English"]
+        },
+        "sameAs": [
+          "https://github.com/sack1978zack-cpu/QuickPoll",
+          "https://quickpollnow.com/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://quickpollnow.com/#website",
+        "url": "https://quickpollnow.com/",
+        "name": "QuickPoll",
+        "publisher": { "@id": "https://quickpollnow.com/#organization" },
+        "inLanguage": "en"
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://quickpollnow.com/#webapp",
+        "name": "QuickPoll",
+        "url": "https://quickpollnow.com/",
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "All",
+        "publisher": { "@id": "https://quickpollnow.com/#organization" },
         "description": "Create free online polls in seconds with custom countdown timers, QR codes, instant social sharing, and live results. No signup needed.",
         "offers": {
           "@type": "Offer",
           "price": "0",
           "priceCurrency": "GBP"
         }
+      },
+      {
+        "@type": "Service",
+        "@id": "https://quickpollnow.com/#service",
+        "name": "Instant Online Polling & QR Voting",
+        "serviceType": "Online Poll Creation",
+        "provider": { "@id": "https://quickpollnow.com/#organization" },
+        "areaServed": "Worldwide",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "GBP"
+        }
+      },
+      {
+        "@type": "HowTo",
+        "name": "How to Create and Share a QuickPoll",
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "Write Question & Answers",
+            "text": "Enter your question or load a template. Add 2 to 8 answers and toggle multiple picks if needed."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "Set Expiration",
+            "text": "Pick a quick timer or custom date and time. Voting locks automatically when the countdown ends."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "Share Link or QR",
+            "text": "Copy your unique link, save the QR code, or post straight to social apps."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 4,
+            "name": "Track Results",
+            "text": "Visit My Polls anytime to reopen active or expired polls and share their links again."
+          }
+        ]
       },
       {
         "@type": "FAQPage",
@@ -99,6 +179,18 @@
             }
           }
         ]
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://quickpollnow.com/#donate",
+        "name": "QuickPoll Donations & 20% Homeless Aid Pledge",
+        "url": "https://quickpollnow.com/#donate",
+        "isPartOf": { "@id": "https://quickpollnow.com/#website" },
+        "potentialAction": {
+          "@type": "DonateAction",
+          "target": "https://buy.stripe.com/fZu6oB4LqgPVbJn8YqdQQ03",
+          "recipient": { "@id": "https://quickpollnow.com/#organization" }
+        }
       }
     ]
   }
@@ -109,8 +201,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="assets/logo.png?v=20261129" />
-  <link rel="stylesheet" href="styles.css?v=20261129" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261130" />
+  <link rel="stylesheet" href="styles.css?v=20261130" />
 </head>
 <body class="theme-sovereign">
   <!-- Clean Luxury Obsidian Ambient Backdrop -->
@@ -209,6 +301,15 @@
       <a href="#donate" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="donate">
         Donate
       </a>
+      <a href="#about" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="about">
+        About
+      </a>
+      <a href="#contact" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="contact">
+        Contact
+      </a>
+      <a href="#terms" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="terms">
+        Terms
+      </a>
       <a href="#saved" class="btn btn-nav drawer-nav-btn stroke-btn" data-page="saved">
         My Polls <span id="mobileSavedCountBadge" class="count-pill">0</span>
       </a>
@@ -226,7 +327,13 @@
       <div class="workspace-grid">
 
         <!-- LEFT: POLL FORM -->
-        <form id="pollForm" class="glass-card builder-card" novalidate>
+        <form
+          id="pollForm"
+          class="glass-card builder-card"
+          toolname="create_poll"
+          tooldescription="Create a new online poll with a question, 2 to 8 answer options, and an expiration timer"
+          novalidate
+        >
           <div class="card-header-row">
             <!-- ICON SLOT: Create Poll Icon -->
             <div class="icon-slot icon-slot-md" data-icon-slot="question">
@@ -937,6 +1044,93 @@
       </div>
     </section>
 
+    <!-- ==================== VIEW 9: ABOUT PAGE ==================== -->
+    <section id="aboutView" class="view-section" aria-labelledby="aboutHeading">
+      <div class="page-narrow">
+        <div class="glass-card page-banner">
+          <div class="icon-slot icon-slot-lg" data-icon-slot="about-hero">
+            <img src="assets/logo.png" alt="About QuickPoll" width="48" height="48" class="slot-img" />
+          </div>
+          <div>
+            <h2 id="aboutHeading" class="page-title stroke-display">About QuickPoll</h2>
+          </div>
+        </div>
+
+        <div class="glass-card policy-card">
+          <div class="policy-section">
+            <h3 class="card-title stroke-heading">Fast, Account Free Polling</h3>
+            <p class="stroke-body">
+              QuickPoll makes it effortless to ask a question, set a live countdown timer, and share a link or scannable QR code in seconds without requiring accounts or downloads.
+            </p>
+          </div>
+          <div class="policy-section">
+            <h3 class="card-title stroke-heading">Community Commitment</h3>
+            <p class="stroke-body">
+              20% of every donation sent through QuickPoll funds hot meals, bottled water, warm clothes, and everyday supplies for people experiencing homelessness, with outreach videos uploaded at the end of each month.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 10: CONTACT PAGE ==================== -->
+    <section id="contactView" class="view-section" aria-labelledby="contactHeading">
+      <div class="page-narrow">
+        <div class="glass-card page-banner">
+          <div class="icon-slot icon-slot-lg" data-icon-slot="contact-hero">
+            <img src="assets/icon-share.png" alt="Contact QuickPoll" width="48" height="48" class="slot-img" />
+          </div>
+          <div>
+            <h2 id="contactHeading" class="page-title stroke-display">Contact</h2>
+          </div>
+        </div>
+
+        <div class="glass-card policy-card">
+          <div class="policy-section">
+            <h3 class="card-title stroke-heading">Support &amp; Inquiries</h3>
+            <p class="stroke-body">
+              Need help with a poll, advertising inquiry, or donation update? Email us directly at <a class="inline-policy-link" href="mailto:contact@quickpollnow.com">contact@quickpollnow.com</a>.
+            </p>
+          </div>
+          <div class="policy-section">
+            <h3 class="card-title stroke-heading">Official Links</h3>
+            <p class="stroke-body">
+              Website: <a class="inline-policy-link" href="https://quickpollnow.com/">quickpollnow.com</a> · Source: <a class="inline-policy-link" href="https://github.com/sack1978zack-cpu/QuickPoll" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 11: TERMS OF USE PAGE ==================== -->
+    <section id="termsView" class="view-section" aria-labelledby="termsHeading">
+      <div class="page-narrow">
+        <div class="glass-card page-banner">
+          <div class="icon-slot icon-slot-lg" data-icon-slot="terms-hero">
+            <img src="assets/icon-vote.png" alt="Terms of Use" width="48" height="48" class="slot-img" />
+          </div>
+          <div>
+            <h2 id="termsHeading" class="page-title stroke-display">Terms of Use</h2>
+          </div>
+        </div>
+
+        <div class="glass-card policy-card">
+          <div class="policy-section">
+            <h3 class="card-title stroke-heading">1. Acceptable Use</h3>
+            <p class="stroke-body">
+              QuickPoll is provided free for lawful group polls, event planning, and community voting. Do not create polls containing unlawful, abusive, or misleading content, and do not attempt automated abuse of the polling API.
+            </p>
+          </div>
+          <div class="policy-section">
+            <h3 class="card-title stroke-heading">2. Poll Expiration &amp; Availability</h3>
+            <p class="stroke-body">
+              Polls expire automatically at the creator's selected time. QuickPoll is offered as is without uptime warranties.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="site-footer">
@@ -957,12 +1151,16 @@
       <a href="#templates" class="footer-nav-link stroke-subtle" data-page="templates">Templates</a>
       <a href="#how-to-use" class="footer-nav-link stroke-subtle" data-page="how-to-use">How to Use</a>
       <a href="#qa" class="footer-nav-link stroke-subtle" data-page="qa">Q&amp;A</a>
+      <a href="#about" class="footer-nav-link stroke-subtle" data-page="about">About</a>
+      <a href="#contact" class="footer-nav-link stroke-subtle" data-page="contact">Contact</a>
+      <a href="#terms" class="footer-nav-link stroke-subtle" data-page="terms">Terms</a>
       <a href="#privacy" class="footer-nav-link stroke-subtle" data-page="privacy">Privacy</a>
       <a href="#donate" class="footer-nav-link stroke-subtle" data-page="donate">Donate</a>
+      <a href="mailto:contact@quickpollnow.com" class="footer-nav-link stroke-subtle">contact@quickpollnow.com</a>
     </nav>
   </footer>
 
-  <script src="vendor-qr.js?v=20261129"></script>
-  <script src="app.js?v=20261129"></script>
+  <script src="vendor-qr.js?v=20261130"></script>
+  <script src="app.js?v=20261130"></script>
 </body>
 </html>
